@@ -17,7 +17,6 @@ void SimpleGhost::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 QPoint SimpleGhost::move(const vector<vector<int>> map) {
     double x = (pos().x() + 10) / 20;
     double y = (pos().y() + 10) / 20;
-    cout << x << " " << y << endl;
 
     int speed = 5;
 

@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QGraphicsRectItem>
 #include <vector>
+#include <QPushButton>
 
 #include "pacman/PacmanItem.h"
 #include "Ghosts/SimpleGhost.h"
@@ -35,6 +36,8 @@ private slots:
 
     void clock();
 
+    void startNewGame();
+
 private:
     int biscuit;
     int wall;
@@ -43,6 +46,7 @@ private:
     int pill;
     int score;
     QLabel *scoreText;
+    QLabel *result;
     QTimer timer;
 
     vector<vector<int>> map;
@@ -51,6 +55,7 @@ private:
     QGraphicsScene *scene;
     QGraphicsView *view;
     QVBoxLayout *mainLayout;
+    QPushButton *newGameBut;
 
     PacmanItem *pacmanTexture;
     SimpleGhost *blinky;

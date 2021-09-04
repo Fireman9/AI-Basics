@@ -9,6 +9,7 @@ GameWidget::GameWidget(QWidget *parent) :
     this->pill = 4;
     this->score = 0;
     scoreText = new QLabel("Score: " + QString::number(score));
+    result = new QLabel("You lost!");
 
     this->map = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -48,6 +49,8 @@ GameWidget::GameWidget(QWidget *parent) :
     this->view = new QGraphicsView(this->scene);
     this->view->setBackgroundBrush(QBrush(Qt::black));
 
+    this->newGameBut = new QPushButton("New Game", this);
+
     this->drawMap();
 
     pacmanTexture = new PacmanItem();
@@ -73,11 +76,13 @@ GameWidget::GameWidget(QWidget *parent) :
     mainLayout = new QVBoxLayout();
     mainLayout->addWidget(scoreText);
     mainLayout->addWidget(view);
+    mainLayout->addWidget(newGameBut);
 
     this->setLayout(mainLayout);
 
     timer.start(50);
     connect(&timer, &QTimer::timeout, this, &GameWidget::clock);
+    connect(newGameBut, &QPushButton::clicked, this, &GameWidget::startNewGame);
 }
 
 void GameWidget::drawMap() {
@@ -149,20 +154,105 @@ void GameWidget::clock() {
     if (score == 30 && scoreChanged) {
         clyde->setDirection(3);
     }
-    timer.start(50);
+
+    if (biscuitTextures.empty()) {
+        cout << "Win" << endl;
+        timer.stop();
+        result = new QLabel("You won!");
+        result->setGeometry(230, 210, 400, 200);
+        result->setStyleSheet(
+                "QLabel { color : white; width: 400px; height: 200px; background-color: transparent; border: 0; font-size: 28px; }");
+        scene->addWidget(result);
+    }
+
+    if (pacmanPos == blinkyPos or pacmanPos == pinkyPos or pacmanPos == inkyPos or pacmanPos == clydePos) {
+        cout << "Lose" << endl;
+        result = new QLabel("You lost!");
+        result->setGeometry(230, 210, 400, 200);
+        result->setStyleSheet(
+                "QLabel { color : white; width: 400px; height: 200px; background-color: transparent; border: 0; font-size: 28px; }");
+        scene->addWidget(result);
+
+        timer.stop();
+    }
 }
 
+void GameWidget::startNewGame() {
+    scene->clear();
+    score = 0;
+    scoreText->setText("Score: " + QString::number(score));
+    biscuitTextures.clear();
+    this->map = {
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
+            {1, 4, 1, 2, 2, 1, 0, 1, 2, 2, 2, 1, 0, 1, 1, 0, 1, 2, 2, 2, 1, 0, 1, 2, 2, 1, 4, 1},
+            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1},
+            {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
+            {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+            {2, 2, 2, 2, 2, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1, 2, 2, 2, 2, 2},
+            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
+            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 1, 1, 3, 3, 3, 3, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
+            {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+            {2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2},
+            {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
+            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
+            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
+            {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
+            {1, 4, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 4, 1},
+            {1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1},
+            {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
+            {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
+            {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+            {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+    };
+
+    this->drawMap();
+
+    pacmanTexture = new PacmanItem();
+    scene->addItem(pacmanTexture);
+    pacmanTexture->setPos(13 * 20 + 10, 23 * 20);
+
+    blinky = new SimpleGhost();
+    scene->addItem(blinky);
+    blinky->setPos(13 * 20, 14 * 20);
+
+    pinky = new SimpleGhost();
+    scene->addItem(pinky);
+    pinky->setPos(14 * 20, 14 * 20);
+
+    inky = new SimpleGhost();
+    scene->addItem(inky);
+    inky->setPos(13 * 20, 15 * 20);
+
+    clyde = new SimpleGhost();
+    scene->addItem(clyde);
+    clyde->setPos(14 * 20, 15 * 20);
+
+    timer.start(50);
+}
 
 GameWidget::~GameWidget() {
     for (auto &it: this->biscuitTextures)
         delete it;
     delete scene;
     delete view;
+    delete newGameBut;
     delete pacmanTexture;
     delete blinky;
     delete pinky;
     delete inky;
     delete clyde;
     delete scoreText;
+    delete result;
     delete mainLayout;
 }
