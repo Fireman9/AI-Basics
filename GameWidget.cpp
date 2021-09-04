@@ -120,9 +120,13 @@ void GameWidget::clock() {
     QPoint pinkyPos = pinky->move(map);
     QPoint inkyPos = inky->move(map);
     QPoint clydePos = clyde->move(map);
+
+    bool scoreChanged = false;
+
     if (-1 < pacmanPos.x() && pacmanPos.x() < 28 && map[pacmanPos.y()][pacmanPos.x()] == 0) {
         map[pacmanPos.y()][pacmanPos.x()] = 2;
         score++;
+        scoreChanged = true;
         scoreText->setText("Score: " + QString::number(score));
         for (int i = 0; i < biscuitTextures.size(); i++) {
             if ((int) (biscuitTextures[i]->pos().x() / 20) == pacmanPos.x() &&
@@ -133,16 +137,16 @@ void GameWidget::clock() {
             }
         }
     }
-    if (score == 1) {
+    if (score == 1 && scoreChanged) {
         blinky->setDirection(3);
     }
-    if (score == 10) {
+    if (score == 10 && scoreChanged) {
         pinky->setDirection(3);
     }
-    if (score == 20) {
+    if (score == 20 && scoreChanged) {
         inky->setDirection(3);
     }
-    if (score == 30) {
+    if (score == 30 && scoreChanged) {
         clyde->setDirection(3);
     }
     timer.start(50);
