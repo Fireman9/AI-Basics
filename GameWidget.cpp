@@ -54,6 +54,22 @@ GameWidget::GameWidget(QWidget *parent) :
     scene->addItem(pacmanTexture);
     pacmanTexture->setPos(13 * 20 + 10, 23 * 20);
 
+    blinky = new SimpleGhost();
+    scene->addItem(blinky);
+    blinky->setPos(13 * 20, 14 * 20);
+
+    pinky = new SimpleGhost();
+    scene->addItem(pinky);
+    pinky->setPos(14 * 20, 14 * 20);
+
+    inky = new SimpleGhost();
+    scene->addItem(inky);
+    inky->setPos(13 * 20, 15 * 20);
+
+    clyde = new SimpleGhost();
+    scene->addItem(clyde);
+    clyde->setPos(14 * 20, 15 * 20);
+
     mainLayout = new QVBoxLayout();
     mainLayout->addWidget(scoreText);
     mainLayout->addWidget(view);
@@ -99,19 +115,35 @@ void GameWidget::keyPressEvent(QKeyEvent *event) {
 }
 
 void GameWidget::clock() {
-    QPoint pos = pacmanTexture->move(map);
-    if (-1 < pos.x() && pos.x() < 28 && map[pos.y()][pos.x()] == 0) {
-        map[pos.y()][pos.x()] = 2;
+    QPoint pacmanPos = pacmanTexture->move(map);
+    QPoint blinkyPos = blinky->move(map);
+    QPoint pinkyPos = pinky->move(map);
+    QPoint inkyPos = inky->move(map);
+    QPoint clydePos = clyde->move(map);
+    if (-1 < pacmanPos.x() && pacmanPos.x() < 28 && map[pacmanPos.y()][pacmanPos.x()] == 0) {
+        map[pacmanPos.y()][pacmanPos.x()] = 2;
         score++;
         scoreText->setText("Score: " + QString::number(score));
         for (int i = 0; i < biscuitTextures.size(); i++) {
-            if ((int) (biscuitTextures[i]->pos().x() / 20) == pos.x() &&
-                (int) (biscuitTextures[i]->pos().y() / 20) == pos.y()) {
+            if ((int) (biscuitTextures[i]->pos().x() / 20) == pacmanPos.x() &&
+                (int) (biscuitTextures[i]->pos().y() / 20) == pacmanPos.y()) {
                 scene->removeItem(biscuitTextures[i]);
                 biscuitTextures.erase(biscuitTextures.begin() + i);
                 break;
             }
         }
+    }
+    if (score == 1) {
+        blinky->setDirection(3);
+    }
+    if (score == 10) {
+        pinky->setDirection(3);
+    }
+    if (score == 20) {
+        inky->setDirection(3);
+    }
+    if (score == 30) {
+        clyde->setDirection(3);
     }
     timer.start(50);
 }
@@ -123,6 +155,10 @@ GameWidget::~GameWidget() {
     delete scene;
     delete view;
     delete pacmanTexture;
+    delete blinky;
+    delete pinky;
+    delete inky;
+    delete clyde;
     delete scoreText;
     delete mainLayout;
 }

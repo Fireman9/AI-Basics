@@ -12,7 +12,8 @@
 #include <QGraphicsRectItem>
 #include <vector>
 
-#include "PacmanItem.h"
+#include "pacman/PacmanItem.h"
+#include "Ghosts/SimpleGhost.h"
 
 using namespace std;
 
@@ -52,6 +53,10 @@ private:
     QVBoxLayout *mainLayout;
 
     PacmanItem *pacmanTexture;
+    SimpleGhost *blinky;
+    SimpleGhost *pinky;
+    SimpleGhost *inky;
+    SimpleGhost *clyde;
 
 };
 

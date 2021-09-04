@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <vector>
 
+#include "../Movement.h"
+
 using namespace std;
 
 class PacmanItem : public QGraphicsItem {
@@ -16,14 +18,6 @@ public:
     QPoint move(const vector<vector<int>> &map);
 
     void setDirection(int newDirection);
-
-    static bool checkLeftBlock(double x, double y, vector<vector<int>> map, double k);
-
-    static bool checkRightBlock(double x, double y, vector<vector<int>> map, double k);
-
-    static bool checkTopBlock(double x, double y, vector<vector<int>> map, double k);
-
-    static bool checkBottomBlock(double x, double y, vector<vector<int>> map, double k);
 
     ~PacmanItem();
 
