@@ -45,8 +45,10 @@ private:
     int block;
     int pill;
     int score;
+    int lives;
     QLabel *scoreText;
     QLabel *result;
+    QLabel *livesText;
     QTimer timer;
 
     vector<vector<int>> map;

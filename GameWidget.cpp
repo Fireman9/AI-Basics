@@ -8,7 +8,9 @@ GameWidget::GameWidget(QWidget *parent) :
     this->block = 3;
     this->pill = 4;
     this->score = 0;
+    this->lives = 3;
     scoreText = new QLabel("Score: " + QString::number(score));
+    livesText = new QLabel("Lives: " + QString::number(lives));
     result = new QLabel("You lost!");
 
     this->map = {
@@ -48,6 +50,8 @@ GameWidget::GameWidget(QWidget *parent) :
     this->scene->setSceneRect(0, 0, 560, 620);
     this->view = new QGraphicsView(this->scene);
     this->view->setBackgroundBrush(QBrush(Qt::black));
+    this->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     this->newGameBut = new QPushButton("New Game", this);
 
@@ -76,6 +80,7 @@ GameWidget::GameWidget(QWidget *parent) :
     mainLayout = new QVBoxLayout();
     mainLayout->addWidget(scoreText);
     mainLayout->addWidget(view);
+    mainLayout->addWidget(livesText);
     mainLayout->addWidget(newGameBut);
 
     this->setLayout(mainLayout);
@@ -166,21 +171,43 @@ void GameWidget::clock() {
     }
 
     if (pacmanPos == blinkyPos or pacmanPos == pinkyPos or pacmanPos == inkyPos or pacmanPos == clydePos) {
-        cout << "Lose" << endl;
-        result = new QLabel("You lost!");
-        result->setGeometry(230, 210, 400, 200);
-        result->setStyleSheet(
-                "QLabel { color : white; width: 400px; height: 200px; background-color: transparent; border: 0; font-size: 28px; }");
-        scene->addWidget(result);
+        lives--;
+        livesText->setText("Lives: " + QString::number(lives));
+        if (lives != 0) {
+            pacmanTexture->setPos(13 * 20 + 10, 23 * 20);
+            pacmanTexture->setDirection(0);
 
-        timer.stop();
+            blinky->setPos(13 * 20, 14 * 20);
+            blinky->setDirection(3);
+
+            pinky->setPos(14 * 20, 14 * 20);
+            pinky->setDirection(3);
+
+            inky->setPos(13 * 20, 15 * 20);
+            inky->setDirection(3);
+
+            clyde->setPos(14 * 20, 15 * 20);
+            clyde->setDirection(3);
+
+        } else {
+            cout << "Lose" << endl;
+            result = new QLabel("You lost!");
+            result->setGeometry(230, 210, 400, 200);
+            result->setStyleSheet(
+                    "QLabel { color : white; width: 400px; height: 200px; background-color: transparent; border: 0; font-size: 28px; }");
+            scene->addWidget(result);
+
+            timer.stop();
+        }
     }
 }
 
 void GameWidget::startNewGame() {
     scene->clear();
     score = 0;
+    lives = 3;
     scoreText->setText("Score: " + QString::number(score));
+    livesText->setText("Lives: " + QString::number(lives));
     biscuitTextures.clear();
     this->map = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -253,6 +280,7 @@ GameWidget::~GameWidget() {
     delete inky;
     delete clyde;
     delete scoreText;
+    delete livesText;
     delete result;
     delete mainLayout;
 }
