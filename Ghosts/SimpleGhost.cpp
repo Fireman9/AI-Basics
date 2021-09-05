@@ -1,7 +1,10 @@
 #include "SimpleGhost.h"
 
 SimpleGhost::SimpleGhost() {
-    ghostTexture.load("../images/Blinky20.png");
+    ghostTextureLeft.load("../images/blinkyLeft.png");
+    ghostTextureRight.load("../images/blinkyRight.png");
+    ghostTextureTop.load("../images/blinkyTop.png");
+    ghostTextureBottom.load("../images/blinkyBottom.png");
     direction = 0;
     prevDirection = 0;
 }
@@ -11,7 +14,15 @@ QRectF SimpleGhost::boundingRect() const {
 }
 
 void SimpleGhost::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    painter->drawImage(0, 0, ghostTexture);
+    if (direction == 1) {
+        painter->drawImage(0, 0, ghostTextureLeft);
+    } else if (direction == 2) {
+        painter->drawImage(0, 0, ghostTextureRight);
+    } else if (direction == 3) {
+        painter->drawImage(0, 0, ghostTextureTop);
+    } else {
+        painter->drawImage(0, 0, ghostTextureBottom);
+    }
 }
 
 QPoint SimpleGhost::move(const vector<vector<int>> map) {

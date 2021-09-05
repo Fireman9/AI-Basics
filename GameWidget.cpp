@@ -134,6 +134,7 @@ void GameWidget::clock() {
     bool scoreChanged = false;
 
     if (-1 < pacmanPos.x() && pacmanPos.x() < 28 && map[pacmanPos.y()][pacmanPos.x()] == 0) {
+        pacmanTexture->setEating(true);
         map[pacmanPos.y()][pacmanPos.x()] = 2;
         score++;
         scoreChanged = true;
@@ -146,6 +147,8 @@ void GameWidget::clock() {
                 break;
             }
         }
+    } else {
+        pacmanTexture->setEating(false);
     }
     if (score == 1 && scoreChanged) {
         blinky->setDirection(3);

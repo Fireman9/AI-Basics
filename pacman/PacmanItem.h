@@ -19,6 +19,8 @@ public:
 
     void setDirection(int newDirection);
 
+    void setEating(bool newEating);
+
     ~PacmanItem();
 
 protected:
@@ -29,8 +31,16 @@ protected:
 private:
     int direction;
     int prevDirection;
+    bool eating;
 
-    QImage pacmanTexture;
+    QImage pacmanLeft;
+    QImage pacmanRight;
+    QImage pacmanTop;
+    QImage pacmanBottom;
+    QImage pacmanLeftEating;
+    QImage pacmanRightEating;
+    QImage pacmanTopEating;
+    QImage pacmanBottomEating;
 };
 
 

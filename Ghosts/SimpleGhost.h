@@ -33,7 +33,10 @@ private:
     int direction;
     int prevDirection;
 
-    QImage ghostTexture;
+    QImage ghostTextureLeft;
+    QImage ghostTextureRight;
+    QImage ghostTextureTop;
+    QImage ghostTextureBottom;
 };
 
 

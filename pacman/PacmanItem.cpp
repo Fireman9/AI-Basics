@@ -1,9 +1,21 @@
 #include "PacmanItem.h"
 
 PacmanItem::PacmanItem() {
-    pacmanTexture.load("../images/pacmanMain20.png");
+    pacmanLeft.load("../images/pacmanLeft.png");
+    pacmanLeftEating.load("../images/pacmanLeftEating.png");
+
+    pacmanRight.load("../images/pacmanRight.png");
+    pacmanRightEating.load("../images/pacmanRightEating.png");
+
+    pacmanTop.load("../images/pacmanTop.png");
+    pacmanTopEating.load("../images/pacmanTopEating.png");
+
+    pacmanBottom.load("../images/pacmanBottom.png");
+    pacmanBottomEating.load("../images/pacmanBottomEating.png");
+
     direction = 1;
     prevDirection = 1;
+    eating = false;
 }
 
 QRectF PacmanItem::boundingRect() const {
@@ -11,7 +23,31 @@ QRectF PacmanItem::boundingRect() const {
 }
 
 void PacmanItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    painter->drawImage(0, 0, pacmanTexture);
+    if (direction == 1) {
+        if (eating) {
+            painter->drawImage(0, 0, pacmanLeftEating);
+        } else {
+            painter->drawImage(0, 0, pacmanLeft);
+        }
+    } else if (direction == 2) {
+        if (eating) {
+            painter->drawImage(0, 0, pacmanRightEating);
+        } else {
+            painter->drawImage(0, 0, pacmanRight);
+        }
+    } else if (direction == 3) {
+        if (eating) {
+            painter->drawImage(0, 0, pacmanTopEating);
+        } else {
+            painter->drawImage(0, 0, pacmanTop);
+        }
+    } else {
+        if (eating) {
+            painter->drawImage(0, 0, pacmanBottomEating);
+        } else {
+            painter->drawImage(0, 0, pacmanBottom);
+        }
+    }
 }
 
 QPoint PacmanItem::move(const vector<vector<int>> &map) {
@@ -67,6 +103,10 @@ QPoint PacmanItem::move(const vector<vector<int>> &map) {
 
 void PacmanItem::setDirection(int newDirection) {
     direction = newDirection;
+}
+
+void PacmanItem::setEating(bool newEating) {
+    eating = newEating;
 }
 
 PacmanItem::~PacmanItem() = default;
