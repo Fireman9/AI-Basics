@@ -277,19 +277,4 @@ void GameWidget::startNewGame() {
     timer.start(50);
 }
 
-GameWidget::~GameWidget() {
-    for (auto &it: this->biscuitTextures)
-        delete it;
-    delete scene;
-    delete view;
-    delete newGameBut;
-    delete pacmanTexture;
-    delete blinky;
-    delete pinky;
-    delete inky;
-    delete clyde;
-    delete scoreText;
-    delete livesText;
-    delete result;
-    delete mainLayout;
-}
+GameWidget::~GameWidget() = default;
