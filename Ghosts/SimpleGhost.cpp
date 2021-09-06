@@ -146,6 +146,4 @@ void SimpleGhost::setDirection(int newDirection) {
     direction = newDirection;
 }
 
-SimpleGhost::~SimpleGhost() {
-
-}
+SimpleGhost::~SimpleGhost() = default;
