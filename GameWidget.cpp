@@ -99,6 +99,12 @@ void GameWidget::drawMap() {
                 wallTexture->setBrush(QBrush(Qt::blue));
                 wallTexture->setPos(j * 20, i * 20);
                 this->scene->addItem(wallTexture);
+            } else if (this->map[i][j] == 3) {
+                auto *blockTexture = new QGraphicsRectItem(0, 0, 20, 5);
+                blockTexture->setPen(Qt::NoPen);
+                blockTexture->setBrush(QBrush(Qt::darkBlue));
+                blockTexture->setPos(j * 20, i * 20);
+                this->scene->addItem(blockTexture);
             } else if (this->map[i][j] == 0) {
                 auto *biscuitTexture = new QGraphicsRectItem(0, 0, 4, 4);
                 biscuitTexture->setPen(Qt::NoPen);

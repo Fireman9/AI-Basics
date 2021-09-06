@@ -85,13 +85,6 @@ QPoint SimpleGhost::move(const vector<vector<int>> map) {
                 shuffle(dirs.begin(), dirs.end(), rng);
                 direction = dirs[0];
             }
-//            else {
-//                vector<int> dirs = {1, 2, 3, 4};
-//                auto rd = std::random_device{};
-//                auto rng = default_random_engine{rd()};
-//                shuffle(dirs.begin(), dirs.end(), rng);
-//                direction = dirs[0];
-//            }
         } else if (direction == 1) {
             vector<int> dirs = {1};
             if (!Movement::checkTopBlock(x, y, map, 0.6, true)) {
