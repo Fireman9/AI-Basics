@@ -2,13 +2,11 @@
 
 GameWidget::GameWidget(QWidget *parent) :
         QWidget(parent) {
-    this->biscuit = 0;
-    this->wall = 1;
-    this->empty = 2;
-    this->block = 3;
-    this->pill = 4;
     this->score = 0;
     this->lives = 3;
+    dfs = true;
+    bfs = false;
+    ucs = false;
     scoreText = new QLabel("Score: " + QString::number(score));
     livesText = new QLabel("Lives: " + QString::number(lives));
     result = new QLabel("You lost!");
@@ -144,33 +142,103 @@ void GameWidget::clock() {
     } else if (pacmanPos.x() == 28) {
         pacmanPos.setX(27);
     }
-
     if (blinkyPos.x() == -1) {
         blinkyPos.setX(0);
     } else if (blinkyPos.x() == 28) {
         blinkyPos.setX(27);
     }
+    if (pinkyPos.x() == -1) {
+        pinkyPos.setX(0);
+    } else if (pinkyPos.x() == 28) {
+        pinkyPos.setX(27);
+    }
+    if (inkyPos.x() == -1) {
+        inkyPos.setX(0);
+    } else if (inkyPos.x() == 28) {
+        inkyPos.setX(27);
+    }
+    if (clydePos.x() == -1) {
+        clydePos.setX(0);
+    } else if (clydePos.x() == 28) {
+        clydePos.setX(27);
+    }
 
-    for (auto &i: dfsPath) {
+    for (auto &i: pathTextures) {
         scene->removeItem(i);
     }
-    dfsPath.clear();
+    pathTextures.clear();
 
     Timer t;
     Algorithms alg;
 
-    t.startTimer();
-    vector<pair<int, int>> path = alg.dfs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
-    t.stopTimer();
-    cout << "Dfs: " << t.getElapsedTime() << "s" << endl;
+    vector<pair<int, int>> pathToBlinky;
+    vector<pair<int, int>> pathToPinky;
+    vector<pair<int, int>> pathToInky;
+    vector<pair<int, int>> pathToClyde;
+    
+    if (dfs) {
+        t.startTimer();
+        pathToBlinky = alg.dfs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
+        pathToPinky = alg.dfs(pacmanPos.x(), pacmanPos.y(), pinkyPos.x(), pinkyPos.y(), map);
+        pathToInky = alg.dfs(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
+        pathToClyde = alg.dfs(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
+        t.stopTimer();
+        cout << "Dfs: " << t.getElapsedTime() << "s" << endl;
+    } else if (bfs) {
+        t.startTimer();
+        pathToBlinky = alg.bfs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
+        pathToPinky = alg.bfs(pacmanPos.x(), pacmanPos.y(), pinkyPos.x(), pinkyPos.y(), map);
+        pathToInky = alg.bfs(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
+        pathToClyde = alg.bfs(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
+        t.stopTimer();
+        cout << "Bfs: " << t.getElapsedTime() << "s" << endl;
+    } else {
+        t.startTimer();
+        pathToBlinky = alg.ucs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
+        pathToPinky = alg.ucs(pacmanPos.x(), pacmanPos.y(), pinkyPos.x(), pinkyPos.y(), map);
+        pathToInky = alg.ucs(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
+        pathToClyde = alg.ucs(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
+        t.stopTimer();
+        cout << "Ucs: " << t.getElapsedTime() << "s" << endl;
+    }
 
-    for (auto &i: path) {
+    for (auto &i: pathToBlinky) {
         auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
         dfsPathTexture->setPen(Qt::NoPen);
-        dfsPathTexture->setBrush(QBrush(Qt::darkGray));
+        dfsPathTexture->setBrush(QBrush(Qt::red));
         dfsPathTexture->setZValue(-1);
         dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
-        this->dfsPath.push_back(dfsPathTexture);
+        this->pathTextures.push_back(dfsPathTexture);
+        this->scene->addItem(dfsPathTexture);
+    }
+
+    for (auto &i: pathToPinky) {
+        auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
+        dfsPathTexture->setPen(Qt::NoPen);
+        dfsPathTexture->setBrush(QBrush(Qt::gray));
+        dfsPathTexture->setZValue(-1);
+        dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
+        this->pathTextures.push_back(dfsPathTexture);
+        this->scene->addItem(dfsPathTexture);
+    }
+
+    for (auto &i: pathToInky) {
+        auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
+        dfsPathTexture->setPen(Qt::NoPen);
+        dfsPathTexture->setBrush(QBrush(Qt::yellow));
+        dfsPathTexture->setZValue(-1);
+        dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
+        this->pathTextures.push_back(dfsPathTexture);
+        this->scene->addItem(dfsPathTexture);
+    }
+
+    for (auto &i: pathToClyde) {
+        auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
+        dfsPathTexture->setPen(Qt::NoPen);
+        dfsPathTexture->setBrush(QBrush(Qt::green));
+        dfsPathTexture->setZValue(-1);
+        dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
+        this->pathTextures.push_back(dfsPathTexture);
         this->scene->addItem(dfsPathTexture);
     }
 
