@@ -22,6 +22,12 @@ private:
     vector<vector<bool>> visited;
 
     static void printMap(const vector<vector<int>> &m);
+
+    pair<int, int> connectToRandomNeighbour(int i, int j, bool deadEnd = false);
+
+    void checkForDeadEnds();
+
+    int getNeighbours(int i, int j);
 };
 
 
