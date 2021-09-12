@@ -15,6 +15,7 @@
 
 #include "pacman/PacmanItem.h"
 #include "Ghosts/SimpleGhost.h"
+#include "MapGenerator.h"
 
 using namespace std;
 

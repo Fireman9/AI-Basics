@@ -56,12 +56,20 @@ QPoint PacmanItem::move(const vector<vector<int>> &map) {
 
     int speed = 6;
 
+    // tunnel for main map
+//    if ((int) x == -1 and (int) y == 14 and direction == 1) {
+//        setPos(28 * 20, 14 * 20);
+//    }
+//    if ((int) x == 28 and (int) y == 14 and direction == 2) {
+//        setPos(-1 * 20, 14 * 20);
+//    }
+
     // tunnel
-    if ((int) x == -1 and (int) y == 14 and direction == 1) {
-        setPos(28 * 20, 14 * 20);
+    if ((int) x == -1 and (int) y == 15 and direction == 1) {
+        setPos(28 * 20, 15 * 20);
     }
-    if ((int) x == 28 and (int) y == 14 and direction == 2) {
-        setPos(-1 * 20, 14 * 20);
+    if ((int) x == 28 and (int) y == 15 and direction == 2) {
+        setPos(-1 * 20, 15 * 20);
     }
 
     if (prevDirection != direction) {
