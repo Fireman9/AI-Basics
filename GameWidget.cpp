@@ -139,6 +139,41 @@ void GameWidget::clock() {
     QPoint inkyPos = inky->move(map);
     QPoint clydePos = clyde->move(map);
 
+    if (pacmanPos.x() == -1) {
+        pacmanPos.setX(0);
+    } else if (pacmanPos.x() == 28) {
+        pacmanPos.setX(27);
+    }
+
+    if (blinkyPos.x() == -1) {
+        blinkyPos.setX(0);
+    } else if (blinkyPos.x() == 28) {
+        blinkyPos.setX(27);
+    }
+
+    for (auto &i: dfsPath) {
+        scene->removeItem(i);
+    }
+    dfsPath.clear();
+
+    Timer t;
+    Algorithms alg;
+
+    t.startTimer();
+    vector<pair<int, int>> path = alg.dfs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
+    t.stopTimer();
+    cout << "Dfs: " << t.getElapsedTime() << "s" << endl;
+
+    for (auto &i: path) {
+        auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
+        dfsPathTexture->setPen(Qt::NoPen);
+        dfsPathTexture->setBrush(QBrush(Qt::darkGray));
+        dfsPathTexture->setZValue(-1);
+        dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
+        this->dfsPath.push_back(dfsPathTexture);
+        this->scene->addItem(dfsPathTexture);
+    }
+
     bool scoreChanged = false;
 
     if (-1 < pacmanPos.x() && pacmanPos.x() < 28 && map[pacmanPos.y()][pacmanPos.x()] == 0) {

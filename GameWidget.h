@@ -16,6 +16,8 @@
 #include "pacman/PacmanItem.h"
 #include "Ghosts/SimpleGhost.h"
 #include "MapGenerator.h"
+#include "Timer.h"
+#include "Algorithms.h"
 
 using namespace std;
 
@@ -54,6 +56,8 @@ private:
 
     vector<vector<int>> map;
     vector<QGraphicsItem *> biscuitTextures;
+
+    vector<QGraphicsItem *> dfsPath;
 
     QGraphicsScene *scene;
     QGraphicsView *view;

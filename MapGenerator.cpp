@@ -127,12 +127,10 @@ pair<int, int> MapGenerator::connectToRandomNeighbour(int i, int j, bool deadEnd
 }
 
 void MapGenerator::checkForDeadEnds() {
-    printMap(map);
     for (int i = 0; i < map.size(); i++) {
         for (int j = 0; j < map[i].size(); j++) {
             if (map[i][j] == 0 && getNeighbours(i, j) < 2) {
                 connectToRandomNeighbour(i, j, true);
-                printMap(map);
             }
         }
     }
