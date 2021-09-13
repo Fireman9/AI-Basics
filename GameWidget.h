@@ -15,6 +15,9 @@
 
 #include "pacman/PacmanItem.h"
 #include "Ghosts/SimpleGhost.h"
+#include "MapGenerator.h"
+#include "Timer.h"
+#include "Algorithms.h"
 
 using namespace std;
 
@@ -39,13 +42,11 @@ private slots:
     void startNewGame();
 
 private:
-    int biscuit;
-    int wall;
-    int empty;
-    int block;
-    int pill;
     int score;
     int lives;
+    bool dfs;
+    bool bfs;
+    bool ucs;
     QLabel *scoreText;
     QLabel *result;
     QLabel *livesText;
@@ -53,6 +54,8 @@ private:
 
     vector<vector<int>> map;
     vector<QGraphicsItem *> biscuitTextures;
+
+    vector<QGraphicsItem *> pathTextures;
 
     QGraphicsScene *scene;
     QGraphicsView *view;
@@ -64,7 +67,6 @@ private:
     SimpleGhost *pinky;
     SimpleGhost *inky;
     SimpleGhost *clyde;
-
 };
 
 
