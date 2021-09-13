@@ -4,9 +4,9 @@ GameWidget::GameWidget(QWidget *parent) :
         QWidget(parent) {
     this->score = 0;
     this->lives = 3;
-    dfs = true;
+    dfs = false;
     bfs = false;
-    ucs = false;
+    ucs = true;
     scoreText = new QLabel("Score: " + QString::number(score));
     livesText = new QLabel("Lives: " + QString::number(lives));
     result = new QLabel("You lost!");
@@ -127,6 +127,21 @@ void GameWidget::keyPressEvent(QKeyEvent *event) {
     } else if (event->key() == Qt::Key_S) {
         pacmanTexture->setDirection(4);
     }
+    if (event->key() == Qt::Key_Z) {
+        if (dfs) {
+            dfs = false;
+            bfs = true;
+            ucs = false;
+        } else if (bfs) {
+            dfs = false;
+            bfs = false;
+            ucs = true;
+        } else {
+            dfs = true;
+            bfs = false;
+            ucs = false;
+        }
+    }
     event->accept();
 }
 
@@ -175,7 +190,7 @@ void GameWidget::clock() {
     vector<pair<int, int>> pathToPinky;
     vector<pair<int, int>> pathToInky;
     vector<pair<int, int>> pathToClyde;
-    
+
     if (dfs) {
         t.startTimer();
         pathToBlinky = alg.dfs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
@@ -183,7 +198,7 @@ void GameWidget::clock() {
         pathToInky = alg.dfs(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
         pathToClyde = alg.dfs(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
         t.stopTimer();
-        cout << "Dfs: " << t.getElapsedTime() << "s" << endl;
+        cout << "Dfs: " << t.getElapsedTime() * 1000 << "ms" << endl;
     } else if (bfs) {
         t.startTimer();
         pathToBlinky = alg.bfs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
@@ -191,7 +206,7 @@ void GameWidget::clock() {
         pathToInky = alg.bfs(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
         pathToClyde = alg.bfs(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
         t.stopTimer();
-        cout << "Bfs: " << t.getElapsedTime() << "s" << endl;
+        cout << "Bfs: " << t.getElapsedTime() * 1000 << "ms" << endl;
     } else {
         t.startTimer();
         pathToBlinky = alg.ucs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
@@ -199,7 +214,7 @@ void GameWidget::clock() {
         pathToInky = alg.ucs(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
         pathToClyde = alg.ucs(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
         t.stopTimer();
-        cout << "Ucs: " << t.getElapsedTime() << "s" << endl;
+        cout << "Ucs: " << t.getElapsedTime() * 1000 << "ms" << endl;
     }
 
     for (auto &i: pathToBlinky) {
@@ -323,6 +338,7 @@ void GameWidget::startNewGame() {
     scoreText->setText("Score: " + QString::number(score));
     livesText->setText("Lives: " + QString::number(lives));
     biscuitTextures.clear();
+    pathTextures.clear();
 //    this->map = {
 //            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 //            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
