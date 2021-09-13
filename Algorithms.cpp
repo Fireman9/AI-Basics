@@ -40,9 +40,15 @@ vector<pair<int, int>> Algorithms::dfs(int startX, int startY, int destX, int de
         }
         if (x == destX && y == destY) destFound = true;
         allVisited = true;
+        bool br = false;
         for (auto &i: visited) {
+            if (br) break;
             for (auto &&j: i) {
-                if (!j) allVisited = false;
+                if (!j) {
+                    allVisited = false;
+                    br = true;
+                    break;
+                }
             }
         }
     }
@@ -50,7 +56,74 @@ vector<pair<int, int>> Algorithms::dfs(int startX, int startY, int destX, int de
 }
 
 vector<pair<int, int>> Algorithms::bfs(int startX, int startY, int destX, int destY, vector<vector<int>> &map) {
+    vector<pair<int, int>> path;
+    vector<vector<pair<int, int>>> prev(map[0].size());
+    for (auto &i: prev) {
+        for (int j = 0; j < map.size(); j++) {
+            i.emplace_back(-1, -1);
+        }
+    }
+    vector<vector<bool>> visited(map.size(), vector<bool>(map[0].size(), false));
+    for (int i = 0; i < visited.size(); i++) {
+        for (int j = 0; j < visited[i].size(); j++) {
+            if (map[i][j] == 1) visited[i][j] = true;
+        }
+    }
+    int x = startX;
+    int y = startY;
+    visited[y][x] = true;
 
+    bool allVisited = false;
+    bool destFound = false;
+    queue<pair<int, int>> queue;
+    queue.push(pair<int, int>(x, y));
+    while (!allVisited && !destFound) {
+        x = queue.front().first;
+        y = queue.front().second;
+        queue.pop();
+        visited[y][x] = true;
+        if ((y + 1 < map.size() && !visited[y + 1][x]) ||
+            (y - 1 > -1 && !visited[y - 1][x]) ||
+            (x + 1 < map[y].size() && !visited[y][x + 1]) ||
+            (x - 1 > -1 && !visited[y][x - 1])) {
+            if (y + 1 < map.size() && !visited[y + 1][x]) {
+                queue.push(pair<int, int>(x, y + 1));
+                prev[x][y + 1] = pair<int, int>(x, y);
+            }
+            if (y - 1 > -1 && !visited[y - 1][x]) {
+                queue.push(pair<int, int>(x, y - 1));
+                prev[x][y - 1] = pair<int, int>(x, y);
+            }
+            if (x + 1 < map[y].size() && !visited[y][x + 1]) {
+                queue.push(pair<int, int>(x + 1, y));
+                prev[x + 1][y] = pair<int, int>(x, y);
+            }
+            if (x - 1 > -1 && !visited[y][x - 1]) {
+                queue.push(pair<int, int>(x - 1, y));
+                prev[x - 1][y] = pair<int, int>(x, y);
+            }
+        }
+        if (x == destX && y == destY) destFound = true;
+        allVisited = true;
+        bool br = false;
+        for (auto &i: visited) {
+            if (br) break;
+            for (auto &&j: i) {
+                if (!j) {
+                    allVisited = false;
+                    br = true;
+                    break;
+                }
+            }
+        }
+    }
+    while (prev[x][y].first != -1 || prev[x][y].second != -1) {
+        path.emplace_back(pair<int, int>(x, y));
+        pair<int, int> pos = prev[x][y];
+        x = pos.first;
+        y = pos.second;
+    }
+    return path;
 }
 
 vector<pair<int, int>> Algorithms::ucs(int startX, int startY, int destX, int destY, vector<vector<int>> &map) {
