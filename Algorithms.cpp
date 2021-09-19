@@ -216,7 +216,7 @@ vector<pair<int, int>> Algorithms::aStar(int startX, int startY, int destX, int 
     vector<vector<bool>> visited(map.size(), vector<bool>(map[0].size(), false));
     for (int i = 0; i < visited.size(); i++) {
         for (int j = 0; j < visited[i].size(); j++) {
-            if (map[i][j] == 1) visited[i][j] = true;
+            if (map[i][j] == 1 || map[i][j] == 3) visited[i][j] = true;
         }
     }
 
