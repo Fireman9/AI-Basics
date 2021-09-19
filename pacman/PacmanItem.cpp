@@ -109,6 +109,10 @@ QPoint PacmanItem::move(const vector<vector<int>> &map) {
     return {(int) x, (int) y};
 }
 
+int PacmanItem::getDirection() {
+    return direction;
+}
+
 void PacmanItem::setDirection(int newDirection) {
     direction = newDirection;
 }

@@ -17,6 +17,8 @@ public:
 
     QPoint move(const vector<vector<int>> &map);
 
+    int getDirection();
+
     void setDirection(int newDirection);
 
     void setEating(bool newEating);

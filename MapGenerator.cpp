@@ -58,6 +58,8 @@ MapGenerator::MapGenerator() {
         map[1][i] = 0;
         map[map.size() - 2][i] = 0;
     }
+
+    map[23][13] = 0;
 }
 
 vector<vector<int>> MapGenerator::generateMapDfs() {
