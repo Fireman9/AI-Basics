@@ -226,7 +226,12 @@ vector<pair<int, int>> Algorithms::aStar(int startX, int startY, int destX, int 
 
     bool allVisited = false;
     bool destFound = false;
-    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<>> queue;
+    struct Order {
+        bool operator()(pair<int, pair<int, int>> const& a, pair<int, pair<int, int>> const& b) const {
+            return a.first > b.first;
+        }
+    };
+    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, Order> queue;
     queue.push(make_pair(1, make_pair(x, y)));
     while (!allVisited && !destFound) {
         x = queue.top().second.first;
