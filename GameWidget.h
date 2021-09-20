@@ -47,12 +47,14 @@ private:
     bool dfs;
     bool bfs;
     bool ucs;
+    QPoint randomBiscuitPos;
     QLabel *scoreText;
     QLabel *result;
     QLabel *livesText;
     QTimer timer;
 
     vector<vector<int>> map;
+    vector<pair<int, int>> path;
     vector<QGraphicsItem *> biscuitTextures;
 
     vector<QGraphicsItem *> pathTextures;
