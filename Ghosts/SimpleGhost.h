@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "../Movement.h"
+#include "../Algorithms.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ class SimpleGhost : public QGraphicsItem {
 public:
     SimpleGhost();
 
-    QPoint move(const vector<vector<int>> map);
+    QPoint move(vector<vector<int>>& map, QPoint pacmanPos);
 
     void setDirection(int newDirection);
 

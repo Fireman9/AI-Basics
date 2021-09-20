@@ -149,10 +149,10 @@ void GameWidget::keyPressEvent(QKeyEvent *event) {
 
 void GameWidget::clock() {
     QPoint pacmanPos = pacmanTexture->move(map);
-    QPoint blinkyPos = blinky->move(map);
-    QPoint pinkyPos = pinky->move(map);
-    QPoint inkyPos = inky->move(map);
-    QPoint clydePos = clyde->move(map);
+    QPoint blinkyPos = blinky->move(map, pacmanPos);
+    QPoint pinkyPos = pinky->move(map, pacmanPos);
+    QPoint inkyPos = inky->move(map, pacmanPos);
+    QPoint clydePos = clyde->move(map, pacmanPos);
 
     if (pacmanPos.x() == -1) {
         pacmanPos.setX(0);
@@ -279,10 +279,6 @@ void GameWidget::clock() {
         pacmanTexture->setEating(false);
     }
 
-    cout << "Pacman" << pacmanPos.x() << " " << pacmanPos.y() << endl;
-    if (!path.empty())
-        cout << "Next point" << path[path.size() - 1].first << " " << path[path.size() - 1].second << endl;
-
     if ((randomBiscuitPos.x() == -1 && randomBiscuitPos.y() == -1) ||
         map[randomBiscuitPos.y()][randomBiscuitPos.x()] == 2) {
         path.clear();
@@ -354,16 +350,16 @@ void GameWidget::clock() {
             pacmanTexture->setDirection(0);
 
             blinky->setPos(13 * 20, 14 * 20);
-            blinky->setDirection(3);
+            blinky->setDirection(0);
 
             pinky->setPos(14 * 20, 14 * 20);
-            pinky->setDirection(3);
+            pinky->setDirection(0);
 
             inky->setPos(13 * 20, 15 * 20);
-            inky->setDirection(3);
+            inky->setDirection(0);
 
             clyde->setPos(14 * 20, 15 * 20);
-            clyde->setDirection(3);
+            clyde->setDirection(0);
 
         } else {
             cout << "Lose" << endl;
