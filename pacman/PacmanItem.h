@@ -5,8 +5,10 @@
 #include <QGraphicsItem>
 #include <QPainter>
 #include <vector>
+#include <random>
 
 #include "../Movement.h"
+#include "../Algorithms.h"
 
 using namespace std;
 
@@ -15,7 +17,7 @@ class PacmanItem : public QGraphicsItem {
 public:
     PacmanItem();
 
-    QPoint move(const vector<vector<int>> &map);
+    QPoint move(const vector<vector<int>> &map, vector<QGraphicsItem *> &biscuitTextures);
 
     int getDirection();
 
@@ -34,6 +36,10 @@ private:
     int direction;
     int prevDirection;
     bool eating;
+
+    vector<pair<int, int>> path;
+
+    QPoint randomBiscuitPos;
 
     QImage pacmanLeft;
     QImage pacmanRight;

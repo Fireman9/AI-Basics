@@ -10,8 +10,6 @@ GameWidget::GameWidget(QWidget *parent) :
     scoreText = new QLabel("Score: " + QString::number(score));
     livesText = new QLabel("Lives: " + QString::number(lives));
     result = new QLabel("You lost!");
-    randomBiscuitPos.setX(-1);
-    randomBiscuitPos.setY(-1);
 
     MapGenerator generator;
     this->map = generator.generateMapDfs();
@@ -192,7 +190,7 @@ void GameWidget::moveActorsToStartPos() {
 }
 
 void GameWidget::clock() {
-    QPoint pacmanPos = pacmanTexture->move(map);
+    QPoint pacmanPos = pacmanTexture->move(map, biscuitTextures);
     QPoint blinkyPos = blinky->move(map, pacmanPos);
     QPoint pinkyPos = pinky->move(map, pacmanPos);
     QPoint inkyPos = inky->move(map, pacmanPos);
@@ -240,44 +238,6 @@ void GameWidget::clock() {
 
     bool scoreChanged = checkForScoreChange(pacmanPos);
 
-    if ((randomBiscuitPos.x() == -1 && randomBiscuitPos.y() == -1) ||
-        map[randomBiscuitPos.y()][randomBiscuitPos.x()] == 2) {
-        path.clear();
-        random_device rd;
-        mt19937 gen(rd());
-        uniform_int_distribution<> distr(0, biscuitTextures.size() - 1);
-        int randomPos = distr(gen);
-        randomBiscuitPos.setX(int((biscuitTextures[randomPos]->x() - 8) / 20));
-        randomBiscuitPos.setY(int((biscuitTextures[randomPos]->y() - 8) / 20));
-        path = alg.aStar(pacmanPos.x(), pacmanPos.y(), randomBiscuitPos.x(), randomBiscuitPos.y(), map);
-        if (!path.empty()) {
-            if (pacmanPos.x() - path[path.size() - 1].first == -1) {
-                pacmanTexture->setDirection(2);
-            } else if (pacmanPos.x() - path[path.size() - 1].first == 1) {
-                pacmanTexture->setDirection(1);
-            } else if (pacmanPos.y() - path[path.size() - 1].second == -1) {
-                pacmanTexture->setDirection(4);
-            } else if (pacmanPos.y() - path[path.size() - 1].second == 1) {
-                pacmanTexture->setDirection(3);
-            }
-        }
-    } else {
-        if (pacmanPos.x() == path[path.size() - 1].first && pacmanPos.y() == path[path.size() - 1].second)
-            path.pop_back();
-        if (!path.empty()) {
-            if (pacmanPos.x() - path[path.size() - 1].first == -1) {
-                if (pacmanTexture->getDirection() != 2) pacmanTexture->setDirection(2);
-            } else if (pacmanPos.x() - path[path.size() - 1].first == 1) {
-                if (pacmanTexture->getDirection() != 1) pacmanTexture->setDirection(1);
-            } else if (pacmanPos.y() - path[path.size() - 1].second == -1) {
-                if (pacmanTexture->getDirection() != 4) pacmanTexture->setDirection(4);
-            } else if (pacmanPos.y() - path[path.size() - 1].second == 1) {
-                if (pacmanTexture->getDirection() != 3) pacmanTexture->setDirection(3);
-            }
-        }
-    }
-
-
     if (score == 1 && scoreChanged) {
         blinky->setDirection(3);
     }
@@ -310,8 +270,6 @@ void GameWidget::checkForGameState(QPoint &pacmanPos, QPoint &blinkyPos, QPoint 
         lives--;
         livesText->setText("Lives: " + QString::number(lives));
         if (lives != 0) {
-            randomBiscuitPos.setX(-1);
-            randomBiscuitPos.setY(-1);
             moveActorsToStartPos();
         } else {
             cout << "Lose" << endl;
@@ -334,8 +292,6 @@ void GameWidget::startNewGame() {
     livesText->setText("Lives: " + QString::number(lives));
     biscuitTextures.clear();
     pathTextures.clear();
-    randomBiscuitPos.setX(-1);
-    randomBiscuitPos.setY(-1);
 
     MapGenerator generator;
     this->map = generator.generateMapDfs();

@@ -16,6 +16,8 @@ PacmanItem::PacmanItem() {
     direction = 0;
     prevDirection = 1;
     eating = false;
+    randomBiscuitPos.setX(-1);
+    randomBiscuitPos.setY(-1);
 }
 
 QRectF PacmanItem::boundingRect() const {
@@ -50,7 +52,7 @@ void PacmanItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     }
 }
 
-QPoint PacmanItem::move(const vector<vector<int>> &map) {
+QPoint PacmanItem::move(const vector<vector<int>> &map, vector<QGraphicsItem *> &biscuitTextures) {
     double x = (pos().x() + 10) / 20;
     double y = (pos().y() + 10) / 20;
 
@@ -106,6 +108,53 @@ QPoint PacmanItem::move(const vector<vector<int>> &map) {
     x = (pos().x() + 10) / 20;
     y = (pos().y() + 10) / 20;
 
+    Algorithms alg;
+
+    if (direction == 0) {
+        randomBiscuitPos.setX(-1);
+        randomBiscuitPos.setY(-1);
+    }
+
+    if ((randomBiscuitPos.x() == -1 && randomBiscuitPos.y() == -1) ||
+        map[randomBiscuitPos.y()][randomBiscuitPos.x()] == 2) {
+        path.clear();
+
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_int_distribution<> distr(0, biscuitTextures.size() - 1);
+        int randomPos = distr(gen);
+
+        randomBiscuitPos.setX(int((biscuitTextures[randomPos]->x() - 8) / 20));
+        randomBiscuitPos.setY(int((biscuitTextures[randomPos]->y() - 8) / 20));
+
+        path = alg.aStar((int) x, (int) y, randomBiscuitPos.x(), randomBiscuitPos.y(),
+                         const_cast<vector<vector<int>> &>(map));
+        if (!path.empty()) {
+            if ((int) x - path[path.size() - 1].first == -1) {
+                direction = 2;
+            } else if ((int) x - path[path.size() - 1].first == 1) {
+                direction = 1;
+            } else if ((int) y - path[path.size() - 1].second == -1) {
+                direction = 4;
+            } else if ((int) y - path[path.size() - 1].second == 1) {
+                direction = 3;
+            }
+        }
+    } else {
+        if ((int) x == path[path.size() - 1].first && (int) y == path[path.size() - 1].second)
+            path.pop_back();
+        if (!path.empty()) {
+            if ((int) x - path[path.size() - 1].first == -1) {
+                if (direction != 2) direction = 2;
+            } else if ((int) x - path[path.size() - 1].first == 1) {
+                if (direction != 1) direction = 1;
+            } else if ((int) y - path[path.size() - 1].second == -1) {
+                if (direction != 4) direction = 4;
+            } else if ((int) y - path[path.size() - 1].second == 1) {
+                if (direction != 3) direction = 3;
+            }
+        }
+    }
     return {(int) x, (int) y};
 }
 
