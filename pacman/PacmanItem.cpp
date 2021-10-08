@@ -13,7 +13,7 @@ PacmanItem::PacmanItem() {
     pacmanBottom.load("../images/pacmanBottom.png");
     pacmanBottomEating.load("../images/pacmanBottomEating.png");
 
-    direction = 1;
+    direction = 0;
     prevDirection = 1;
     eating = false;
 }

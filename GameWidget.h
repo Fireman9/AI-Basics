@@ -20,6 +20,7 @@
 #include "Algorithms.h"
 
 using namespace std;
+using namespace std::placeholders;
 
 class GameWidget : public QWidget {
 Q_OBJECT
@@ -51,7 +52,7 @@ private:
     QLabel *scoreText;
     QLabel *result;
     QLabel *livesText;
-    QTimer timer;
+    QTimer gameTimer;
 
     vector<vector<int>> map;
     vector<pair<int, int>> path;
@@ -69,6 +70,23 @@ private:
     SimpleGhost *pinky;
     SimpleGhost *inky;
     SimpleGhost *clyde;
+
+    void tunnelCoordinates(QPoint &pos);
+
+    double setPathesToGhosts(const function<vector<pair<int, int>>(int, int, int, int, vector<vector<int>> &)> &exec,
+                             vector<pair<int, int>> &pathToBlinky, vector<pair<int, int>> &pathToPinky,
+                             vector<pair<int, int>> &pathToInky, vector<pair<int, int>> &pathToClyde,
+                             QPoint &pacmanPos,
+                             QPoint &blinkyPos, QPoint &pinkyPos, QPoint &inkyPos, QPoint &clydePos);
+
+    void showPathToGhost(vector<pair<int, int>> &pathToGhost, const QBrush &brush);
+
+    bool checkForScoreChange(QPoint &pacmanPos);
+
+    void moveActorsToStartPos();
+
+    void checkForGameState(QPoint &pacmanPos, QPoint &blinkyPos, QPoint &pinkyPos, QPoint &inkyPos,
+                           QPoint &clydePos);
 };
 
 
