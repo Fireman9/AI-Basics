@@ -128,7 +128,7 @@ QPoint PacmanItem::move(const vector<vector<int>> &map, vector<QGraphicsItem *> 
         randomBiscuitPos.setY(int((biscuitTextures[randomPos]->y() - 8) / 20));
 
         path = alg.aStar((int) x, (int) y, randomBiscuitPos.x(), randomBiscuitPos.y(),
-                         const_cast<vector<vector<int>> &>(map));
+                         const_cast<vector<vector<int>> &>(map), false, false);
         if (!path.empty()) {
             if ((int) x - path[path.size() - 1].first == -1) {
                 direction = 2;

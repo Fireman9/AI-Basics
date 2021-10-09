@@ -21,7 +21,9 @@ public:
 
     vector<pair<int, int>> ucs(int startX, int startY, int destX, int destY, vector<vector<int>> &map);
 
-    vector<pair<int, int>> aStar(int startX, int startY, int destX, int destY, vector<vector<int>> &map);
+    vector<pair<int, int>>
+    aStar(int startX, int startY, int destX, int destY, vector<vector<int>> &map, bool ghost, bool pathDrawing,
+          int direction = 0);
 
     ~Algorithms();
 };

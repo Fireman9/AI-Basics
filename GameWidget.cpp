@@ -4,9 +4,10 @@ GameWidget::GameWidget(QWidget *parent) :
         QWidget(parent) {
     this->score = 0;
     this->lives = 3;
-    dfs = false;
-    bfs = false;
-    ucs = true;
+    canMoveBlinky = false;
+    canMovePinky = false;
+    canMoveInky = false;
+    canMoveClyde = false;
     scoreText = new QLabel("Score: " + QString::number(score));
     livesText = new QLabel("Lives: " + QString::number(lives));
     result = new QLabel("You lost!");
@@ -95,21 +96,6 @@ void GameWidget::keyPressEvent(QKeyEvent *event) {
 //    } else if (event->key() == Qt::Key_S) {
 //        pacmanTexture->setDirection(4);
 //    }
-    if (event->key() == Qt::Key_Z) {
-        if (dfs) {
-            dfs = false;
-            bfs = true;
-            ucs = false;
-        } else if (bfs) {
-            dfs = false;
-            bfs = false;
-            ucs = true;
-        } else {
-            dfs = true;
-            bfs = false;
-            ucs = false;
-        }
-    }
     event->accept();
 }
 
@@ -122,36 +108,41 @@ void GameWidget::tunnelCoordinates(QPoint &pos) {
 }
 
 double
-GameWidget::setPathesToGhosts(const function<vector<pair<int, int>>(int, int, int, int, vector<vector<int>> &)> &exec,
-                              vector<pair<int, int>> &pathToBlinky, vector<pair<int, int>> &pathToPinky,
-                              vector<pair<int, int>> &pathToInky, vector<pair<int, int>> &pathToClyde,
-                              QPoint &pacmanPos,
-                              QPoint &blinkyPos, QPoint &pinkyPos, QPoint &inkyPos, QPoint &clydePos) {
+GameWidget::setPathesToGhosts(
+        const function<vector<pair<int, int>>(int, int, int, int, vector<vector<int>> &, bool, bool, int)> &exec,
+        vector<pair<int, int>> &pathToBlinky, vector<pair<int, int>> &pathToPinky,
+        vector<pair<int, int>> &pathToInky, vector<pair<int, int>> &pathToClyde,
+        QPoint &pacmanPos,
+        QPoint &blinkyPos, QPoint &pinkyPos, QPoint &inkyPos, QPoint &clydePos) {
     Timer t;
 
     t.startTimer();
-    pathToBlinky = exec(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
-    pathToPinky = exec(pacmanPos.x(), pacmanPos.y(), pinkyPos.x(), pinkyPos.y(), map);
-    pathToInky = exec(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
-    pathToClyde = exec(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
+    pathToBlinky = exec(blinkyPos.x(), blinkyPos.y(), pacmanPos.x(), pacmanPos.y(), map, true, true,
+                        blinky->getDirection());
+    pathToPinky = exec(pinkyPos.x(), pinkyPos.y(), pacmanPos.x(), pacmanPos.y(), map, true, true,
+                       pinky->getDirection());
+    pathToInky = exec(inkyPos.x(), inkyPos.y(), pacmanPos.x(), pacmanPos.y(), map, true, true, inky->getDirection());
+    pathToClyde = exec(clydePos.x(), clydePos.y(), pacmanPos.x(), pacmanPos.y(), map, true, true,
+                       clyde->getDirection());
     t.stopTimer();
 
     return t.getElapsedTime();
 }
 
 void GameWidget::showPathToGhost(vector<pair<int, int>> &pathToGhost, const QBrush &brush) {
-    for (auto &i: pathToGhost) {
-        auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
-        dfsPathTexture->setPen(Qt::NoPen);
-        dfsPathTexture->setBrush(brush);
-        dfsPathTexture->setZValue(-1);
-        dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
-        this->pathTextures.push_back(dfsPathTexture);
-        this->scene->addItem(dfsPathTexture);
+    for (int i = 0; i < pathToGhost.size(); i++) {
+        if (i == 0 || i == pathToGhost.size() - 1) continue;
+        auto *pathTexture = new QGraphicsRectItem(0, 0, 10, 10);
+        pathTexture->setPen(Qt::NoPen);
+        pathTexture->setBrush(brush);
+        pathTexture->setZValue(-1);
+        pathTexture->setPos(pathToGhost[i].first * 20 + 5, pathToGhost[i].second * 20 + 5);
+        this->pathTextures.push_back(pathTexture);
+        this->scene->addItem(pathTexture);
     }
 }
 
-bool GameWidget::checkForScoreChange(QPoint &pacmanPos) {
+void GameWidget::checkForScoreChange(QPoint &pacmanPos) {
     if (-1 < pacmanPos.x() && pacmanPos.x() < 28 && map[pacmanPos.y()][pacmanPos.x()] == 0) {
         pacmanTexture->setEating(true);
         map[pacmanPos.y()][pacmanPos.x()] = 2;
@@ -165,10 +156,8 @@ bool GameWidget::checkForScoreChange(QPoint &pacmanPos) {
                 break;
             }
         }
-        return true;
     } else {
         pacmanTexture->setEating(false);
-        return false;
     }
 }
 
@@ -178,23 +167,47 @@ void GameWidget::moveActorsToStartPos() {
 
     blinky->setPos(13 * 20, 14 * 20);
     blinky->setDirection(0);
+    canMoveBlinky = false;
 
     pinky->setPos(14 * 20, 14 * 20);
     pinky->setDirection(0);
+    canMovePinky = false;
 
     inky->setPos(13 * 20, 15 * 20);
     inky->setDirection(0);
+    canMoveInky = false;
 
     clyde->setPos(14 * 20, 15 * 20);
     clyde->setDirection(0);
+    canMoveClyde = false;
 }
 
 void GameWidget::clock() {
     QPoint pacmanPos = pacmanTexture->move(map, biscuitTextures);
-    QPoint blinkyPos = blinky->move(map, pacmanPos);
-    QPoint pinkyPos = pinky->move(map, pacmanPos);
-    QPoint inkyPos = inky->move(map, pacmanPos);
-    QPoint clydePos = clyde->move(map, pacmanPos);
+
+    checkForScoreChange(pacmanPos);
+
+    if (score >= 1 && !canMoveBlinky) {
+        blinky->setDirection(3);
+        canMoveBlinky = true;
+    }
+    if (score >= 10 && !canMovePinky) {
+        pinky->setDirection(3);
+        canMovePinky = true;
+    }
+    if (score >= 20 && !canMoveInky) {
+        inky->setDirection(3);
+        canMoveInky = true;
+    }
+    if (score >= 30 && !canMoveClyde) {
+        clyde->setDirection(3);
+        canMoveClyde = true;
+    }
+
+    QPoint blinkyPos = blinky->move(map, pacmanPos, canMoveBlinky);
+    QPoint pinkyPos = pinky->move(map, pacmanPos, canMovePinky);
+    QPoint inkyPos = inky->move(map, pacmanPos, canMoveInky);
+    QPoint clydePos = clyde->move(map, pacmanPos, canMoveClyde);
 
     tunnelCoordinates(pacmanPos);
     tunnelCoordinates(blinkyPos);
@@ -211,45 +224,16 @@ void GameWidget::clock() {
 
     vector<pair<int, int>> pathToBlinky, pathToPinky, pathToInky, pathToClyde;
 
-    if (dfs) {
-        auto execFunctP = bind(&Algorithms::bfs, alg, _1, _2, _3, _4, _5);
-        double elapsedTime = setPathesToGhosts(execFunctP,
-                                               pathToBlinky, pathToPinky, pathToInky, pathToClyde,
-                                               pacmanPos, blinkyPos, pinkyPos, inkyPos, clydePos) * 1000;
-        cout << "Dfs: " << elapsedTime << "ms" << endl;
-    } else if (bfs) {
-        auto execFunctP = bind(&Algorithms::bfs, alg, _1, _2, _3, _4, _5);
-        double elapsedTime = setPathesToGhosts(execFunctP,
-                                               pathToBlinky, pathToPinky, pathToInky, pathToClyde,
-                                               pacmanPos, blinkyPos, pinkyPos, inkyPos, clydePos) * 1000;
-        cout << "Bfs: " << elapsedTime << "ms" << endl;
-    } else {
-        auto execFunctP = bind(&Algorithms::ucs, alg, _1, _2, _3, _4, _5);
-        double elapsedTime = setPathesToGhosts(execFunctP,
-                                               pathToBlinky, pathToPinky, pathToInky, pathToClyde,
-                                               pacmanPos, blinkyPos, pinkyPos, inkyPos, clydePos) * 1000;
-        cout << "Ucs: " << elapsedTime << "ms" << endl;
-    }
+    auto execFunctP = bind(&Algorithms::aStar, alg, _1, _2, _3, _4, _5, _6, _7, _8);
+    double elapsedTime = setPathesToGhosts(execFunctP,
+                                           pathToBlinky, pathToPinky, pathToInky, pathToClyde,
+                                           pacmanPos, blinkyPos, pinkyPos, inkyPos, clydePos) * 1000;
+    cout << "A*: " << elapsedTime << "ms" << endl;
 
     showPathToGhost(pathToBlinky, QBrush(Qt::red));
     showPathToGhost(pathToPinky, QBrush(Qt::gray));
     showPathToGhost(pathToInky, QBrush(Qt::yellow));
     showPathToGhost(pathToClyde, QBrush(Qt::green));
-
-    bool scoreChanged = checkForScoreChange(pacmanPos);
-
-    if (score == 1 && scoreChanged) {
-        blinky->setDirection(3);
-    }
-    if (score == 10 && scoreChanged) {
-        pinky->setDirection(3);
-    }
-    if (score == 20 && scoreChanged) {
-        inky->setDirection(3);
-    }
-    if (score == 30 && scoreChanged) {
-        clyde->setDirection(3);
-    }
 
     checkForGameState(pacmanPos, blinkyPos, pinkyPos, inkyPos, clydePos);
 }

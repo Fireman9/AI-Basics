@@ -45,9 +45,11 @@ private slots:
 private:
     int score;
     int lives;
-    bool dfs;
-    bool bfs;
-    bool ucs;
+    bool canMoveBlinky;
+    bool canMovePinky;
+    bool canMoveInky;
+    bool canMoveClyde;
+
     QLabel *scoreText;
     QLabel *result;
     QLabel *livesText;
@@ -71,15 +73,16 @@ private:
 
     void tunnelCoordinates(QPoint &pos);
 
-    double setPathesToGhosts(const function<vector<pair<int, int>>(int, int, int, int, vector<vector<int>> &)> &exec,
-                             vector<pair<int, int>> &pathToBlinky, vector<pair<int, int>> &pathToPinky,
-                             vector<pair<int, int>> &pathToInky, vector<pair<int, int>> &pathToClyde,
-                             QPoint &pacmanPos,
-                             QPoint &blinkyPos, QPoint &pinkyPos, QPoint &inkyPos, QPoint &clydePos);
+    double setPathesToGhosts(
+            const function<vector<pair<int, int>>(int, int, int, int, vector<vector<int>> &, bool, bool, int)> &exec,
+            vector<pair<int, int>> &pathToBlinky, vector<pair<int, int>> &pathToPinky,
+            vector<pair<int, int>> &pathToInky, vector<pair<int, int>> &pathToClyde,
+            QPoint &pacmanPos,
+            QPoint &blinkyPos, QPoint &pinkyPos, QPoint &inkyPos, QPoint &clydePos);
 
     void showPathToGhost(vector<pair<int, int>> &pathToGhost, const QBrush &brush);
 
-    bool checkForScoreChange(QPoint &pacmanPos);
+    void checkForScoreChange(QPoint &pacmanPos);
 
     void moveActorsToStartPos();
 
