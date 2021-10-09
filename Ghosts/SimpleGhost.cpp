@@ -1,5 +1,7 @@
 #include "SimpleGhost.h"
 
+#include <random>
+
 SimpleGhost::SimpleGhost() {
     ghostTextureLeft.load("../images/blinkyLeft.png");
     ghostTextureRight.load("../images/blinkyRight.png");
@@ -24,7 +26,7 @@ void SimpleGhost::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     }
 }
 
-QPoint SimpleGhost::move(vector<vector<int>> &map, QPoint pacmanPos, bool canMove) {
+QPoint SimpleGhost::move(vector<vector<int>> &map, QPoint pacmanPos, bool canMove, bool random) {
     double x = (pos().x() + 10) / 20;
     double y = (pos().y() + 10) / 20;
 
@@ -45,20 +47,39 @@ QPoint SimpleGhost::move(vector<vector<int>> &map, QPoint pacmanPos, bool canMov
     x = (pos().x() + 10) / 20;
     y = (pos().y() + 10) / 20;
 
+    vector<int> randomDirs;
+
     if (x - (int) x == 0.5 && y - (int) y == 0.5 && canMove) {
         if (!((int) x >= 12 && (int) x <= 16 && (int) y >= 12 && (int) y <= 16)) {
-            Algorithms alg;
-            vector<pair<int, int>> path;
-            path = alg.aStar((int) x, (int) y, pacmanPos.x(), pacmanPos.y(), map, true, false, direction);
-            if (!path.empty()) {
-                if ((int) x - path[path.size() - 1].first == -1) {
-                    direction = 2;
-                } else if ((int) x - path[path.size() - 1].first == 1) {
-                    direction = 1;
-                } else if ((int) y - path[path.size() - 1].second == -1) {
-                    direction = 4;
-                } else if ((int) y - path[path.size() - 1].second == 1) {
-                    direction = 3;
+            if (random) {
+                if (direction != 1) {
+                    if (!Movement::checkRightBlock(x, y, map, 0.6, false)) randomDirs.push_back(2);
+                }
+                if (direction != 2) {
+                    if (!Movement::checkLeftBlock(x, y, map, 0.6, false)) randomDirs.push_back(1);
+                }
+                if (direction != 3) {
+                    if (!Movement::checkBottomBlock(x, y, map, 0.6, false)) randomDirs.push_back(4);
+                }
+                if (direction != 4) {
+                    if (!Movement::checkTopBlock(x, y, map, 0.6, false)) randomDirs.push_back(3);
+                }
+                shuffle(randomDirs.begin(), randomDirs.end(), std::mt19937(std::random_device()()));
+                if (!randomDirs.empty()) direction = randomDirs[0];
+            } else {
+                Algorithms alg;
+                vector<pair<int, int>> path;
+                path = alg.aStar((int) x, (int) y, pacmanPos.x(), pacmanPos.y(), map, true, false, direction);
+                if (!path.empty()) {
+                    if ((int) x - path[path.size() - 1].first == -1) {
+                        direction = 2;
+                    } else if ((int) x - path[path.size() - 1].first == 1) {
+                        direction = 1;
+                    } else if ((int) y - path[path.size() - 1].second == -1) {
+                        direction = 4;
+                    } else if ((int) y - path[path.size() - 1].second == 1) {
+                        direction = 3;
+                    }
                 }
             }
         }

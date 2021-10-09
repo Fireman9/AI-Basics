@@ -204,10 +204,10 @@ void GameWidget::clock() {
         canMoveClyde = true;
     }
 
-    QPoint blinkyPos = blinky->move(map, pacmanPos, canMoveBlinky);
-    QPoint pinkyPos = pinky->move(map, pacmanPos, canMovePinky);
-    QPoint inkyPos = inky->move(map, pacmanPos, canMoveInky);
-    QPoint clydePos = clyde->move(map, pacmanPos, canMoveClyde);
+    QPoint blinkyPos = blinky->move(map, pacmanPos, canMoveBlinky, true);
+    QPoint pinkyPos = pinky->move(map, pacmanPos, canMovePinky, false);
+    QPoint inkyPos = inky->move(map, pacmanPos, canMoveInky, true);
+    QPoint clydePos = clyde->move(map, pacmanPos, canMoveClyde, false);
 
     tunnelCoordinates(pacmanPos);
     tunnelCoordinates(blinkyPos);

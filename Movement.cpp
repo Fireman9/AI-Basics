@@ -13,7 +13,7 @@ bool Movement::checkLeftBlock(double x, double y, vector<vector<int>> map, doubl
 }
 
 bool Movement::checkRightBlock(double x, double y, vector<vector<int>> map, double k, bool ghost) {
-    if ((int) (x + k) < 0) {
+    if ((int) (x + k) > map[0].size()) {
         return false;
     } else if (map[(int) y][(int) (x + k)] != 1 && ghost) {
         return false;

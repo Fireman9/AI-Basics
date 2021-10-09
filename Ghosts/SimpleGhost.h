@@ -19,7 +19,7 @@ class SimpleGhost : public QGraphicsItem {
 public:
     SimpleGhost();
 
-    QPoint move(vector<vector<int>>& map, QPoint pacmanPos, bool canMove);
+    QPoint move(vector<vector<int>>& map, QPoint pacmanPos, bool canMove, bool random);
 
     void setDirection(int newDirection);
 
