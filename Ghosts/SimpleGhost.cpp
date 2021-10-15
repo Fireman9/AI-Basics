@@ -95,4 +95,8 @@ int SimpleGhost::getDirection() {
     return direction;
 }
 
+QPoint SimpleGhost::getPos() {
+    return {(int) (pos().x() + 10) / 20, (int) (pos().y() + 10) / 20};
+}
+
 SimpleGhost::~SimpleGhost() = default;

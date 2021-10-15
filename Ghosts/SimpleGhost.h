@@ -25,6 +25,8 @@ public:
 
     int getDirection();
 
+    QPoint getPos();
+
     ~SimpleGhost();
 
 protected:
