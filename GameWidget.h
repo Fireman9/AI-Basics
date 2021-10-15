@@ -73,7 +73,7 @@ private:
 
     void tunnelCoordinates(QPoint &pos);
 
-    double setPathesToGhosts(
+    void setPathesToGhosts(
             const function<vector<pair<int, int>>(int, int, int, int, vector<vector<int>> &, bool, bool, int)> &exec,
             vector<pair<int, int>> &pathToBlinky, vector<pair<int, int>> &pathToPinky,
             vector<pair<int, int>> &pathToInky, vector<pair<int, int>> &pathToClyde,
