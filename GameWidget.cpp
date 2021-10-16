@@ -55,6 +55,7 @@ GameWidget::GameWidget(QWidget *parent) :
     this->setLayout(mainLayout);
 
     gameTimer.start(70);
+    totalGameTime.startTimer();
     connect(&gameTimer, &QTimer::timeout, this, &GameWidget::clock);
     connect(newGameBut, &QPushButton::clicked, this, &GameWidget::startNewGame);
 }
@@ -84,6 +85,7 @@ void GameWidget::drawMap() {
             }
         }
     }
+    maxScore = biscuitTextures.size();
 }
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {
@@ -196,6 +198,7 @@ void GameWidget::checkForGameState(QPoint &pacmanPos, QPoint &blinkyPos, QPoint 
         result->setStyleSheet(
                 "QLabel { color : white; width: 400px; height: 200px; background-color: transparent; border: 0; font-size: 28px; }");
         scene->addWidget(result);
+        writeStats(true, true);
     }
 
     if (pacmanPos == blinkyPos or pacmanPos == pinkyPos or pacmanPos == inkyPos or pacmanPos == clydePos) {
@@ -212,8 +215,34 @@ void GameWidget::checkForGameState(QPoint &pacmanPos, QPoint &blinkyPos, QPoint 
             scene->addWidget(result);
 
             gameTimer.stop();
+            writeStats(false, true);
         }
     }
+}
+
+void GameWidget::writeStats(bool win, bool minimax) {
+    totalGameTime.stopTimer();
+    QFile file("Stats.csv");
+    bool empty = false;
+    if (file.size() == 0) empty = true;
+    if (!file.open(QFile::WriteOnly | QIODevice::Append | QFile::Text)) {
+        QMessageBox::warning(this, "Writing to stats file", "File wasn't opened");
+    }
+    QTextStream out(&file);
+
+    if (empty) {
+        out << "Result,Time(sec),Points,Max Points,Algorithm\n";
+    }
+
+    if (win) out << "Win,";
+    else out << "Lose,";
+
+    out << totalGameTime.getElapsedTime()<< ",";
+    out << score << ",";
+    out << maxScore << ",";
+
+    if (minimax) out << "Minimax\n";
+    else out << "Expectimax\n";
 }
 
 void GameWidget::startNewGame() {

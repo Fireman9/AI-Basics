@@ -12,6 +12,7 @@
 #include <QGraphicsRectItem>
 #include <vector>
 #include <QPushButton>
+#include <QMessageBox>
 
 #include "pacman/PacmanItem.h"
 #include "Ghosts/SimpleGhost.h"
@@ -30,6 +31,8 @@ public:
 
     void drawMap();
 
+    void writeStats(bool win, bool minimax);
+
     ~GameWidget();
 
 protected:
@@ -44,6 +47,7 @@ private slots:
 
 private:
     int score;
+    int maxScore;
     int lives;
     bool canMoveBlinky;
     bool canMovePinky;
@@ -64,6 +68,8 @@ private:
     QGraphicsView *view;
     QVBoxLayout *mainLayout;
     QPushButton *newGameBut;
+
+    Timer totalGameTime;
 
     PacmanItem *pacmanTexture;
     SimpleGhost *blinky;
