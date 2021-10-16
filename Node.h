@@ -23,7 +23,7 @@ public:
 
     double calculateValue();
 
-    int getPoints(vector<QPoint> &points);
+    bool biscuitLeft();
 
     int getDist(int fromX, int fromY, int toX, int toY);
 
@@ -33,7 +33,15 @@ public:
 
     double getValue();
 
-    int getBestChild();
+    int calculateBestChild();
+
+    QPoint getPacmanPos() const;
+
+    const vector<Node> &getChildren() const;
+
+    int getBestChildIndex() const;
+
+    int findFirstBiscuitBfs(bool findGhost);
 
     ~Node();
 
