@@ -107,35 +107,6 @@ void GameWidget::tunnelCoordinates(QPoint &pos) {
     }
 }
 
-void
-GameWidget::setPathesToGhosts(
-        const function<vector<pair<int, int>>(int, int, int, int, vector<vector<int>> &, bool, bool, int)> &exec,
-        vector<pair<int, int>> &pathToBlinky, vector<pair<int, int>> &pathToPinky,
-        vector<pair<int, int>> &pathToInky, vector<pair<int, int>> &pathToClyde,
-        QPoint &pacmanPos,
-        QPoint &blinkyPos, QPoint &pinkyPos, QPoint &inkyPos, QPoint &clydePos) {
-    pathToBlinky = exec(blinkyPos.x(), blinkyPos.y(), pacmanPos.x(), pacmanPos.y(), map, true, true,
-                        blinky->getDirection());
-    pathToPinky = exec(pinkyPos.x(), pinkyPos.y(), pacmanPos.x(), pacmanPos.y(), map, true, true,
-                       pinky->getDirection());
-    pathToInky = exec(inkyPos.x(), inkyPos.y(), pacmanPos.x(), pacmanPos.y(), map, true, true, inky->getDirection());
-    pathToClyde = exec(clydePos.x(), clydePos.y(), pacmanPos.x(), pacmanPos.y(), map, true, true,
-                       clyde->getDirection());
-}
-
-void GameWidget::showPathToGhost(vector<pair<int, int>> &pathToGhost, const QBrush &brush) {
-    for (int i = 0; i < pathToGhost.size(); i++) {
-        if (i == 0 || i == pathToGhost.size() - 1) continue;
-        auto *pathTexture = new QGraphicsRectItem(0, 0, 10, 10);
-        pathTexture->setPen(Qt::NoPen);
-        pathTexture->setBrush(brush);
-        pathTexture->setZValue(-1);
-        pathTexture->setPos(pathToGhost[i].first * 20 + 5, pathToGhost[i].second * 20 + 5);
-        this->pathTextures.push_back(pathTexture);
-        this->scene->addItem(pathTexture);
-    }
-}
-
 void GameWidget::checkForScoreChange(QPoint &pacmanPos) {
     if (-1 < pacmanPos.x() && pacmanPos.x() < 28 && map[pacmanPos.y()][pacmanPos.x()] == 0) {
         pacmanTexture->setEating(true);
@@ -212,25 +183,6 @@ void GameWidget::clock() {
     tunnelCoordinates(inkyPos);
     tunnelCoordinates(clydePos);
 
-    for (auto &i: pathTextures) {
-        scene->removeItem(i);
-    }
-    pathTextures.clear();
-
-    Algorithms alg;
-
-    vector<pair<int, int>> pathToBlinky, pathToPinky, pathToInky, pathToClyde;
-
-    auto execFunctP = bind(&Algorithms::aStar, alg, _1, _2, _3, _4, _5, _6, _7, _8);
-    setPathesToGhosts(execFunctP,
-                      pathToBlinky, pathToPinky, pathToInky, pathToClyde,
-                      pacmanPos, blinkyPos, pinkyPos, inkyPos, clydePos);
-
-    showPathToGhost(pathToBlinky, QBrush(Qt::red));
-    showPathToGhost(pathToPinky, QBrush(Qt::gray));
-    showPathToGhost(pathToInky, QBrush(Qt::yellow));
-    showPathToGhost(pathToClyde, QBrush(Qt::green));
-
     checkForGameState(pacmanPos, blinkyPos, pinkyPos, inkyPos, clydePos);
 }
 
@@ -271,7 +223,6 @@ void GameWidget::startNewGame() {
     scoreText->setText("Score: " + QString::number(score));
     livesText->setText("Lives: " + QString::number(lives));
     biscuitTextures.clear();
-    pathTextures.clear();
 
     MapGenerator generator;
     this->map = generator.generateMapDfs();
