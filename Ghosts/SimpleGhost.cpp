@@ -33,11 +33,11 @@ QPoint SimpleGhost::move(vector<vector<int>> &map, QPoint pacmanPos, bool canMov
     int speed = 5;
 
     // tunnel
-    if ((int) x == -1 and (int) y == 15 and direction == 1) {
-        setPos(28 * 20, 15 * 20);
+    if ((int) x == 0 and (int) y == 15 and direction == 1) {
+        setPos(27 * 20, 15 * 20);
     }
-    if ((int) x == 28 and (int) y == 15 and direction == 2) {
-        setPos(-1 * 20, 15 * 20);
+    if ((int) x == 27 and (int) y == 15 and direction == 2) {
+        setPos(0 * 20, 15 * 20);
     }
 
     if (canMove) {

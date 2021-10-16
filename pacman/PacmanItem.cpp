@@ -67,11 +67,11 @@ QPoint PacmanItem::move(const vector<vector<int>> &map, vector<QGraphicsItem *> 
 //    }
 
     // tunnel
-    if ((int) x == -1 and (int) y == 15 and direction == 1) {
-        setPos(28 * 20, 15 * 20);
+    if ((int) x == 0 and (int) y == 15 and direction == 1) {
+        setPos(27 * 20, 15 * 20);
     }
-    if ((int) x == 28 and (int) y == 15 and direction == 2) {
-        setPos(-1 * 20, 15 * 20);
+    if ((int) x == 27 and (int) y == 15 and direction == 2) {
+        setPos(0 * 20, 15 * 20);
     }
 
     if (prevDirection != direction) {
@@ -116,16 +116,18 @@ QPoint PacmanItem::move(const vector<vector<int>> &map, vector<QGraphicsItem *> 
                      blinkyDir, pinkyDir, inkyDir, clydeDir,
                      map);
     const vector<Node> &nextMoveNode = minimaxTree.getChildren();
-    QPoint nextMove = nextMoveNode[minimaxTree.getBestChildIndex()].getPacmanPos();
-    if (!nextMoveNode.empty()) {
-        if ((int) x - nextMove.x() == -1) {
-            direction = 2;
-        } else if ((int) x - nextMove.x() == 1) {
-            direction = 1;
-        } else if ((int) y - nextMove.y() == -1) {
-            direction = 4;
-        } else if ((int) y - nextMove.y() == 1) {
-            direction = 3;
+    if (minimaxTree.getBestChildIndex() != -1) {
+        QPoint nextMove = nextMoveNode[minimaxTree.getBestChildIndex()].getPacmanPos();
+        if (!nextMoveNode.empty()) {
+            if ((int) x - nextMove.x() == -1) {
+                direction = 2;
+            } else if ((int) x - nextMove.x() == 1) {
+                direction = 1;
+            } else if ((int) y - nextMove.y() == -1) {
+                direction = 4;
+            } else if ((int) y - nextMove.y() == 1) {
+                direction = 3;
+            }
         }
     }
 
