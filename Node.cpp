@@ -204,25 +204,25 @@ void Node::getAllNewCoordinates(QPoint &ghostPos, vector<QPoint> &pos, int direc
         return;
     }
     if (direction != 1) {
-        if (!Movement::checkRightBlock(ghostPos.x(), ghostPos.y(), map, 0.6, true)) {
+        if (!Movement::checkRightBlock(ghostPos.x(), ghostPos.y(), map, 1, true)) {
             pos.emplace_back(ghostPos.x() + 1, ghostPos.y());
             newDirection = 2;
         }
     }
     if (direction != 2) {
-        if (!Movement::checkLeftBlock(ghostPos.x(), ghostPos.y(), map, 0.6, true)) {
+        if (!Movement::checkLeftBlock(ghostPos.x(), ghostPos.y(), map, 1, true)) {
             pos.emplace_back(ghostPos.x() - 1, ghostPos.y());
             newDirection = 1;
         }
     }
     if (direction != 3) {
-        if (!Movement::checkBottomBlock(ghostPos.x(), ghostPos.y(), map, 0.6, true)) {
+        if (!Movement::checkBottomBlock(ghostPos.x(), ghostPos.y(), map, 1, true)) {
             pos.emplace_back(ghostPos.x(), ghostPos.y() + 1);
             newDirection = 4;
         }
     }
     if (direction != 4) {
-        if (!Movement::checkTopBlock(ghostPos.x(), ghostPos.y(), map, 0.6, true)) {
+        if (!Movement::checkTopBlock(ghostPos.x(), ghostPos.y(), map, 1, true)) {
             pos.emplace_back(ghostPos.x(), ghostPos.y() - 1);
             newDirection = 3;
         }
