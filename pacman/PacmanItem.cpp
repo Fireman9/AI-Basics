@@ -114,7 +114,7 @@ QPoint PacmanItem::move(const vector<vector<int>> &map, vector<QGraphicsItem *> 
     Node minimaxTree(true, true, -9999, 9999, 0, 0, QPoint((int) x, (int) y),
                      blinkyPos, pinkyPos, inkyPos, clydePos,
                      blinkyDir, pinkyDir, inkyDir, clydeDir,
-                     map);
+                     map, false);
     const vector<Node> &nextMoveNodes = minimaxTree.getChildren();
     for (const auto &node: nextMoveNodes) {
         if (node.getValue() == minimaxTree.getValue()) {

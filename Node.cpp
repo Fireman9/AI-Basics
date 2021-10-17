@@ -3,7 +3,7 @@
 Node::Node(bool root, bool max, double alpha, double beta, int depth, double value,
            QPoint pacmanPos, QPoint blinkyPos, QPoint pinkyPos, QPoint inkyPos, QPoint clydePos,
            int blinkyDir, int pinkyDir, int inkyDir, int clydeDir,
-           vector<vector<int>> map) {
+           vector<vector<int>> map, bool expectimax) {
     this->root = root;
     this->max = max;
     this->alpha = alpha;
@@ -11,6 +11,8 @@ Node::Node(bool root, bool max, double alpha, double beta, int depth, double val
     this->depth = depth;
     this->depthLimit = 4;
     this->parentValue = value;
+
+    this->expectimax = expectimax;
 
     this->blinkyDir = blinkyDir;
     this->pinkyDir = pinkyDir;
@@ -32,7 +34,11 @@ Node::Node(bool root, bool max, double alpha, double beta, int depth, double val
         this->map[this->pacmanPos.y()][this->pacmanPos.x()] = 2;
     }
 
-    generateChildren();
+    if (this->expectimax) {
+        generateChildrenExpectimax();
+    } else {
+        generateChildren();
+    }
 }
 
 double Node::calculateValue() {
@@ -270,7 +276,7 @@ void Node::generateChildren() {
                          pacman,
                          blinkyPos, pinkyPos, inkyPos, clydePos,
                          blinkyDir, pinkyDir, inkyDir, clydeDir,
-                         newMap)
+                         newMap, false)
             );
             bestValue = std::max(bestValue, children.back().getValue());
             alpha = std::max(alpha, bestValue);
@@ -298,7 +304,7 @@ void Node::generateChildren() {
                                      pacmanPos,
                                      blinky, pinky, inky, clyde,
                                      newBlinkyDir, newPinkyDir, newInkyDir, newClydeDir,
-                                     newMap)
+                                     newMap, false)
                         );
                         bestValue = std::min(bestValue, children.back().getValue());
                         beta = std::min(beta, bestValue);
@@ -311,6 +317,76 @@ void Node::generateChildren() {
             }
         }
         finalValue = bestValue;
+    }
+}
+
+void Node::generateChildrenExpectimax() {
+    if (depth == depthLimit) return;
+    if (!biscuitLeft()) {
+        this->finalValue = calculateValue() + parentValue;
+        return;
+    }
+
+    vector<QPoint> newPacmanPos;
+    vector<QPoint> newBlinkyPos;
+    vector<QPoint> newPinkyPos;
+    vector<QPoint> newInkyPos;
+    vector<QPoint> newClydePos;
+    int newBlinkyDir;
+    int newPinkyDir;
+    int newInkyDir;
+    int newClydeDir;
+    vector<vector<int>> newMap = map;
+
+    if (max) {
+        if (!Movement::checkRightBlock(pacmanPos.x(), pacmanPos.y(), map, 1, false)) {
+            newPacmanPos.emplace_back(pacmanPos.x() + 1, pacmanPos.y());
+        }
+        if (!Movement::checkLeftBlock(pacmanPos.x(), pacmanPos.y(), map, 1, false)) {
+            newPacmanPos.emplace_back(pacmanPos.x() - 1, pacmanPos.y());
+        }
+        if (!Movement::checkBottomBlock(pacmanPos.x(), pacmanPos.y(), map, 1, false)) {
+            newPacmanPos.emplace_back(pacmanPos.x(), pacmanPos.y() + 1);
+        }
+        if (!Movement::checkTopBlock(pacmanPos.x(), pacmanPos.y(), map, 1, false)) {
+            newPacmanPos.emplace_back(pacmanPos.x(), pacmanPos.y() - 1);
+        }
+        double bestValue = -9999;
+        for (auto &pacman: newPacmanPos) {
+            children.emplace_back(
+                    Node(false, false, alpha, beta, depth + 1, parentValue + tempValue,
+                         pacman,
+                         blinkyPos, pinkyPos, inkyPos, clydePos,
+                         blinkyDir, pinkyDir, inkyDir, clydeDir,
+                         newMap, false)
+            );
+            bestValue = std::max(bestValue, children.back().getValue());
+        }
+        finalValue = bestValue;
+    } else {
+        getAllNewCoordinates(blinkyPos, newBlinkyPos, blinkyDir, newBlinkyDir);
+        getAllNewCoordinates(pinkyPos, newPinkyPos, pinkyDir, newPinkyDir);
+        getAllNewCoordinates(inkyPos, newInkyPos, inkyDir, newInkyDir);
+        getAllNewCoordinates(clydePos, newClydePos, clydeDir, newClydeDir);
+
+        double avgValue = 0;
+        for (auto &blinky: newBlinkyPos) {
+            for (auto &pinky: newPinkyPos) {
+                for (auto &inky: newInkyPos) {
+                    for (auto &clyde: newClydePos) {
+                        children.emplace_back(
+                                Node(false, true, alpha, beta, depth + 1, parentValue + tempValue,
+                                     pacmanPos,
+                                     blinky, pinky, inky, clyde,
+                                     newBlinkyDir, newPinkyDir, newInkyDir, newClydeDir,
+                                     newMap, true)
+                        );
+                        avgValue += children.back().getValue();
+                    }
+                }
+            }
+        }
+        finalValue = avgValue / (double) children.size();
     }
 }
 

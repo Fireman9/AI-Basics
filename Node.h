@@ -19,7 +19,7 @@ public:
     Node(bool root, bool max, double alpha, double beta, int depth, double value,
          QPoint pacmanPos, QPoint blinkyPos, QPoint pinkyPos, QPoint inkyPos, QPoint clydePos,
          int blinkyDir, int pinkyDir, int inkyDir, int clydeDir,
-         vector<vector<int>> map);
+         vector<vector<int>> map, bool expectimax);
 
     double calculateValue();
 
@@ -30,6 +30,8 @@ public:
     void getAllNewCoordinates(QPoint &ghostPos, vector<QPoint> &pos, int direction, int &newDirection);
 
     void generateChildren();
+
+    void generateChildrenExpectimax();
 
     double getValue() const;
 
@@ -51,6 +53,8 @@ private:
     double parentValue;
     int depth;
     int depthLimit;
+
+    bool expectimax;
 
     int blinkyDir;
     int pinkyDir;
