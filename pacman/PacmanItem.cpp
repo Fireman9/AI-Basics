@@ -13,7 +13,7 @@ PacmanItem::PacmanItem() {
     pacmanBottom.load("../images/pacmanBottom.png");
     pacmanBottomEating.load("../images/pacmanBottomEating.png");
 
-    direction = 1;
+    direction = 0;
     prevDirection = 1;
     eating = false;
 }
@@ -50,7 +50,9 @@ void PacmanItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     }
 }
 
-QPoint PacmanItem::move(const vector<vector<int>> &map) {
+QPoint PacmanItem::move(const vector<vector<int>> &map, vector<QGraphicsItem *> &biscuitTextures,
+                        QPoint blinkyPos, QPoint pinkyPos, QPoint inkyPos, QPoint clydePos,
+                        int blinkyDir, int pinkyDir, int inkyDir, int clydeDir) {
     double x = (pos().x() + 10) / 20;
     double y = (pos().y() + 10) / 20;
 
@@ -65,11 +67,11 @@ QPoint PacmanItem::move(const vector<vector<int>> &map) {
 //    }
 
     // tunnel
-    if ((int) x == -1 and (int) y == 15 and direction == 1) {
-        setPos(28 * 20, 15 * 20);
+    if ((int) x == 0 and (int) y == 15 and direction == 1) {
+        setPos(27 * 20, 15 * 20);
     }
-    if ((int) x == 28 and (int) y == 15 and direction == 2) {
-        setPos(-1 * 20, 15 * 20);
+    if ((int) x == 27 and (int) y == 15 and direction == 2) {
+        setPos(0 * 20, 15 * 20);
     }
 
     if (prevDirection != direction) {
@@ -105,6 +107,32 @@ QPoint PacmanItem::move(const vector<vector<int>> &map) {
 
     x = (pos().x() + 10) / 20;
     y = (pos().y() + 10) / 20;
+
+    Timer t;
+    t.startTimer();
+
+    Node minimaxTree(true, true, -9999, 9999, 0, 0, QPoint((int) x, (int) y),
+                     blinkyPos, pinkyPos, inkyPos, clydePos,
+                     blinkyDir, pinkyDir, inkyDir, clydeDir,
+                     map, false);
+    const vector<Node> &nextMoveNodes = minimaxTree.getChildren();
+    for (const auto &node: nextMoveNodes) {
+        if (node.getValue() == minimaxTree.getValue()) {
+            QPoint nextMove = node.getPacmanPos();
+            if ((int) x - nextMove.x() == -1) {
+                direction = 2;
+            } else if ((int) x - nextMove.x() == 1) {
+                direction = 1;
+            } else if ((int) y - nextMove.y() == -1) {
+                direction = 4;
+            } else if ((int) y - nextMove.y() == 1) {
+                direction = 3;
+            }
+        }
+    }
+
+    t.stopTimer();
+    cout << "Node: " << t.getElapsedTime() * 1000 << endl << endl;
 
     return {(int) x, (int) y};
 }

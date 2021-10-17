@@ -5,8 +5,13 @@
 #include <QGraphicsItem>
 #include <QPainter>
 #include <vector>
+#include <random>
+#include <iostream>
 
 #include "../Movement.h"
+#include "../Algorithms.h"
+#include "../Node.h"
+#include "../Timer.h"
 
 using namespace std;
 
@@ -15,7 +20,9 @@ class PacmanItem : public QGraphicsItem {
 public:
     PacmanItem();
 
-    QPoint move(const vector<vector<int>> &map);
+    QPoint move(const vector<vector<int>> &map, vector<QGraphicsItem *> &biscuitTextures,
+                QPoint blinkyPos, QPoint pinkyPos, QPoint inkyPos, QPoint clydePos,
+                int blinkyDir, int pinkyDir, int inkyDir, int clydeDir);
 
     int getDirection();
 

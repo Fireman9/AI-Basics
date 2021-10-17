@@ -12,6 +12,7 @@
 #include <QGraphicsRectItem>
 #include <vector>
 #include <QPushButton>
+#include <QMessageBox>
 
 #include "pacman/PacmanItem.h"
 #include "Ghosts/SimpleGhost.h"
@@ -20,6 +21,7 @@
 #include "Algorithms.h"
 
 using namespace std;
+using namespace std::placeholders;
 
 class GameWidget : public QWidget {
 Q_OBJECT
@@ -28,6 +30,8 @@ public:
     explicit GameWidget(QWidget *parent = nullptr);
 
     void drawMap();
+
+    void writeStats(bool win, bool minimax);
 
     ~GameWidget();
 
@@ -43,18 +47,19 @@ private slots:
 
 private:
     int score;
+    int maxScore;
     int lives;
-    bool dfs;
-    bool bfs;
-    bool ucs;
-    QPoint randomBiscuitPos;
+    bool canMoveBlinky;
+    bool canMovePinky;
+    bool canMoveInky;
+    bool canMoveClyde;
+
     QLabel *scoreText;
     QLabel *result;
     QLabel *livesText;
-    QTimer timer;
+    QTimer gameTimer;
 
     vector<vector<int>> map;
-    vector<pair<int, int>> path;
     vector<QGraphicsItem *> biscuitTextures;
 
     vector<QGraphicsItem *> pathTextures;
@@ -64,11 +69,22 @@ private:
     QVBoxLayout *mainLayout;
     QPushButton *newGameBut;
 
+    Timer totalGameTime;
+
     PacmanItem *pacmanTexture;
     SimpleGhost *blinky;
     SimpleGhost *pinky;
     SimpleGhost *inky;
     SimpleGhost *clyde;
+
+    void tunnelCoordinates(QPoint &pos);
+
+    void checkForScoreChange(QPoint &pacmanPos);
+
+    void moveActorsToStartPos();
+
+    void checkForGameState(QPoint &pacmanPos, QPoint &blinkyPos, QPoint &pinkyPos, QPoint &inkyPos,
+                           QPoint &clydePos);
 };
 
 

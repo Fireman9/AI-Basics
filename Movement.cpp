@@ -2,7 +2,7 @@
 
 bool Movement::checkLeftBlock(double x, double y, vector<vector<int>> map, double k, bool ghost) {
     if ((int) (x - k) < 0) {
-        return false;
+        return true;
     } else if (map[(int) y][(int) (x - k)] != 1 && ghost) {
         return false;
     } else if (map[(int) y][(int) (x - k)] != 1 && map[(int) y][(int) (x - k)] != 3) {
@@ -13,8 +13,8 @@ bool Movement::checkLeftBlock(double x, double y, vector<vector<int>> map, doubl
 }
 
 bool Movement::checkRightBlock(double x, double y, vector<vector<int>> map, double k, bool ghost) {
-    if ((int) (x + k) < 0) {
-        return false;
+    if ((int) (x + k) >= map[0].size()) {
+        return true;
     } else if (map[(int) y][(int) (x + k)] != 1 && ghost) {
         return false;
     } else if (map[(int) y][(int) (x + k)] != 1 and map[(int) y][(int) (x + k)] != 3) {

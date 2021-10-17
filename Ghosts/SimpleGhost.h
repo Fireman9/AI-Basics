@@ -19,9 +19,13 @@ class SimpleGhost : public QGraphicsItem {
 public:
     SimpleGhost();
 
-    QPoint move(vector<vector<int>>& map, QPoint pacmanPos);
+    QPoint move(vector<vector<int>>& map, QPoint pacmanPos, bool canMove, bool random);
 
     void setDirection(int newDirection);
+
+    int getDirection();
+
+    QPoint getPos();
 
     ~SimpleGhost();
 
@@ -32,7 +36,6 @@ protected:
 
 private:
     int direction;
-    int prevDirection;
 
     QImage ghostTextureLeft;
     QImage ghostTextureRight;

@@ -4,50 +4,17 @@ GameWidget::GameWidget(QWidget *parent) :
         QWidget(parent) {
     this->score = 0;
     this->lives = 3;
-    dfs = false;
-    bfs = false;
-    ucs = true;
+    canMoveBlinky = false;
+    canMovePinky = false;
+    canMoveInky = false;
+    canMoveClyde = false;
     scoreText = new QLabel("Score: " + QString::number(score));
     livesText = new QLabel("Lives: " + QString::number(lives));
     result = new QLabel("You lost!");
-    randomBiscuitPos.setX(-1);
-    randomBiscuitPos.setY(-1);
 
-//    this->map = {
-//            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 4, 1, 2, 2, 1, 0, 1, 2, 2, 2, 1, 0, 1, 1, 0, 1, 2, 2, 2, 1, 0, 1, 2, 2, 1, 4, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 1, 1, 3, 3, 3, 3, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//            {2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2},
-//            {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 4, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 4, 1},
-//            {1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1},
-//            {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
-//            {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-//    };
     MapGenerator generator;
     this->map = generator.generateMapDfs();
+
     this->scene = new QGraphicsScene();
     this->scene->setSceneRect(0, 0, 560, 620);
     this->view = new QGraphicsView(this->scene);
@@ -87,8 +54,9 @@ GameWidget::GameWidget(QWidget *parent) :
 
     this->setLayout(mainLayout);
 
-    timer.start(50);
-    connect(&timer, &QTimer::timeout, this, &GameWidget::clock);
+    gameTimer.start(70);
+    totalGameTime.startTimer();
+    connect(&gameTimer, &QTimer::timeout, this, &GameWidget::clock);
     connect(newGameBut, &QPushButton::clicked, this, &GameWidget::startNewGame);
 }
 
@@ -117,6 +85,7 @@ void GameWidget::drawMap() {
             }
         }
     }
+    maxScore = biscuitTextures.size();
 }
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {
@@ -129,143 +98,22 @@ void GameWidget::keyPressEvent(QKeyEvent *event) {
 //    } else if (event->key() == Qt::Key_S) {
 //        pacmanTexture->setDirection(4);
 //    }
-    if (event->key() == Qt::Key_Z) {
-        if (dfs) {
-            dfs = false;
-            bfs = true;
-            ucs = false;
-        } else if (bfs) {
-            dfs = false;
-            bfs = false;
-            ucs = true;
-        } else {
-            dfs = true;
-            bfs = false;
-            ucs = false;
-        }
-    }
     event->accept();
 }
 
-void GameWidget::clock() {
-    QPoint pacmanPos = pacmanTexture->move(map);
-    QPoint blinkyPos = blinky->move(map, pacmanPos);
-    QPoint pinkyPos = pinky->move(map, pacmanPos);
-    QPoint inkyPos = inky->move(map, pacmanPos);
-    QPoint clydePos = clyde->move(map, pacmanPos);
-
-    if (pacmanPos.x() == -1) {
-        pacmanPos.setX(0);
-    } else if (pacmanPos.x() == 28) {
-        pacmanPos.setX(27);
+void GameWidget::tunnelCoordinates(QPoint &pos) {
+    if (pos.x() == -1) {
+        pos.setX(0);
+    } else if (pos.x() == 28) {
+        pos.setX(27);
     }
-    if (blinkyPos.x() == -1) {
-        blinkyPos.setX(0);
-    } else if (blinkyPos.x() == 28) {
-        blinkyPos.setX(27);
-    }
-    if (pinkyPos.x() == -1) {
-        pinkyPos.setX(0);
-    } else if (pinkyPos.x() == 28) {
-        pinkyPos.setX(27);
-    }
-    if (inkyPos.x() == -1) {
-        inkyPos.setX(0);
-    } else if (inkyPos.x() == 28) {
-        inkyPos.setX(27);
-    }
-    if (clydePos.x() == -1) {
-        clydePos.setX(0);
-    } else if (clydePos.x() == 28) {
-        clydePos.setX(27);
-    }
+}
 
-    for (auto &i: pathTextures) {
-        scene->removeItem(i);
-    }
-    pathTextures.clear();
-
-    Timer t;
-    Algorithms alg;
-
-    vector<pair<int, int>> pathToBlinky;
-    vector<pair<int, int>> pathToPinky;
-    vector<pair<int, int>> pathToInky;
-    vector<pair<int, int>> pathToClyde;
-
-    if (dfs) {
-        t.startTimer();
-        pathToBlinky = alg.dfs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
-        pathToPinky = alg.dfs(pacmanPos.x(), pacmanPos.y(), pinkyPos.x(), pinkyPos.y(), map);
-        pathToInky = alg.dfs(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
-        pathToClyde = alg.dfs(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
-        t.stopTimer();
-        cout << "Dfs: " << t.getElapsedTime() * 1000 << "ms" << endl;
-    } else if (bfs) {
-        t.startTimer();
-        pathToBlinky = alg.bfs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
-        pathToPinky = alg.bfs(pacmanPos.x(), pacmanPos.y(), pinkyPos.x(), pinkyPos.y(), map);
-        pathToInky = alg.bfs(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
-        pathToClyde = alg.bfs(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
-        t.stopTimer();
-        cout << "Bfs: " << t.getElapsedTime() * 1000 << "ms" << endl;
-    } else {
-        t.startTimer();
-        pathToBlinky = alg.ucs(pacmanPos.x(), pacmanPos.y(), blinkyPos.x(), blinkyPos.y(), map);
-        pathToPinky = alg.ucs(pacmanPos.x(), pacmanPos.y(), pinkyPos.x(), pinkyPos.y(), map);
-        pathToInky = alg.ucs(pacmanPos.x(), pacmanPos.y(), inkyPos.x(), inkyPos.y(), map);
-        pathToClyde = alg.ucs(pacmanPos.x(), pacmanPos.y(), clydePos.x(), clydePos.y(), map);
-        t.stopTimer();
-        cout << "Ucs: " << t.getElapsedTime() * 1000 << "ms" << endl;
-    }
-
-    for (auto &i: pathToBlinky) {
-        auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
-        dfsPathTexture->setPen(Qt::NoPen);
-        dfsPathTexture->setBrush(QBrush(Qt::red));
-        dfsPathTexture->setZValue(-1);
-        dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
-        this->pathTextures.push_back(dfsPathTexture);
-        this->scene->addItem(dfsPathTexture);
-    }
-
-    for (auto &i: pathToPinky) {
-        auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
-        dfsPathTexture->setPen(Qt::NoPen);
-        dfsPathTexture->setBrush(QBrush(Qt::gray));
-        dfsPathTexture->setZValue(-1);
-        dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
-        this->pathTextures.push_back(dfsPathTexture);
-        this->scene->addItem(dfsPathTexture);
-    }
-
-    for (auto &i: pathToInky) {
-        auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
-        dfsPathTexture->setPen(Qt::NoPen);
-        dfsPathTexture->setBrush(QBrush(Qt::yellow));
-        dfsPathTexture->setZValue(-1);
-        dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
-        this->pathTextures.push_back(dfsPathTexture);
-        this->scene->addItem(dfsPathTexture);
-    }
-
-    for (auto &i: pathToClyde) {
-        auto *dfsPathTexture = new QGraphicsRectItem(0, 0, 10, 10);
-        dfsPathTexture->setPen(Qt::NoPen);
-        dfsPathTexture->setBrush(QBrush(Qt::green));
-        dfsPathTexture->setZValue(-1);
-        dfsPathTexture->setPos(i.first * 20 + 5, i.second * 20 + 5);
-        this->pathTextures.push_back(dfsPathTexture);
-        this->scene->addItem(dfsPathTexture);
-    }
-
-    bool scoreChanged = false;
-
+void GameWidget::checkForScoreChange(QPoint &pacmanPos) {
     if (-1 < pacmanPos.x() && pacmanPos.x() < 28 && map[pacmanPos.y()][pacmanPos.x()] == 0) {
         pacmanTexture->setEating(true);
         map[pacmanPos.y()][pacmanPos.x()] = 2;
         score++;
-        scoreChanged = true;
         scoreText->setText("Score: " + QString::number(score));
         for (int i = 0; i < biscuitTextures.size(); i++) {
             if ((int) (biscuitTextures[i]->pos().x() / 20) == pacmanPos.x() &&
@@ -278,89 +126,86 @@ void GameWidget::clock() {
     } else {
         pacmanTexture->setEating(false);
     }
+}
 
-    if ((randomBiscuitPos.x() == -1 && randomBiscuitPos.y() == -1) ||
-        map[randomBiscuitPos.y()][randomBiscuitPos.x()] == 2) {
-        path.clear();
-        random_device rd;
-        mt19937 gen(rd());
-        uniform_int_distribution<> distr(0, biscuitTextures.size() - 1);
-        int randomPos = distr(gen);
-        randomBiscuitPos.setX(int((biscuitTextures[randomPos]->x() - 8) / 20));
-        randomBiscuitPos.setY(int((biscuitTextures[randomPos]->y() - 8) / 20));
-        path = alg.aStar(pacmanPos.x(), pacmanPos.y(), randomBiscuitPos.x(), randomBiscuitPos.y(), map);
-        if (!path.empty()) {
-            if (pacmanPos.x() - path[path.size() - 1].first == -1) {
-                pacmanTexture->setDirection(2);
-            } else if (pacmanPos.x() - path[path.size() - 1].first == 1) {
-                pacmanTexture->setDirection(1);
-            } else if (pacmanPos.y() - path[path.size() - 1].second == -1) {
-                pacmanTexture->setDirection(4);
-            } else if (pacmanPos.y() - path[path.size() - 1].second == 1) {
-                pacmanTexture->setDirection(3);
-            }
-        }
-    } else {
-        if (pacmanPos.x() == path[path.size() - 1].first && pacmanPos.y() == path[path.size() - 1].second)
-            path.pop_back();
-        if (!path.empty()) {
-            if (pacmanPos.x() - path[path.size() - 1].first == -1) {
-                if (pacmanTexture->getDirection() != 2) pacmanTexture->setDirection(2);
-            } else if (pacmanPos.x() - path[path.size() - 1].first == 1) {
-                if (pacmanTexture->getDirection() != 1) pacmanTexture->setDirection(1);
-            } else if (pacmanPos.y() - path[path.size() - 1].second == -1) {
-                if (pacmanTexture->getDirection() != 4) pacmanTexture->setDirection(4);
-            } else if (pacmanPos.y() - path[path.size() - 1].second == 1) {
-                if (pacmanTexture->getDirection() != 3) pacmanTexture->setDirection(3);
-            }
-        }
-    }
+void GameWidget::moveActorsToStartPos() {
+    pacmanTexture->setPos(13 * 20, 23 * 20);
+    pacmanTexture->setDirection(0);
 
+    blinky->setPos(13 * 20, 14 * 20);
+    blinky->setDirection(0);
+    canMoveBlinky = false;
 
-    if (score == 1 && scoreChanged) {
+    pinky->setPos(14 * 20, 14 * 20);
+    pinky->setDirection(0);
+    canMovePinky = false;
+
+    inky->setPos(13 * 20, 15 * 20);
+    inky->setDirection(0);
+    canMoveInky = false;
+
+    clyde->setPos(14 * 20, 15 * 20);
+    clyde->setDirection(0);
+    canMoveClyde = false;
+}
+
+void GameWidget::clock() {
+    if (score >= 1 && !canMoveBlinky) {
         blinky->setDirection(3);
+        canMoveBlinky = true;
     }
-    if (score == 10 && scoreChanged) {
+    if (score >= 10 && !canMovePinky) {
         pinky->setDirection(3);
+        canMovePinky = true;
     }
-    if (score == 20 && scoreChanged) {
+    if (score >= 20 && !canMoveInky) {
         inky->setDirection(3);
+        canMoveInky = true;
     }
-    if (score == 30 && scoreChanged) {
+    if (score >= 30 && !canMoveClyde) {
         clyde->setDirection(3);
+        canMoveClyde = true;
     }
 
+    QPoint pacmanPos = pacmanTexture->move(map, biscuitTextures,
+                                           blinky->getPos(), pinky->getPos(),
+                                           inky->getPos(), clyde->getPos(),
+                                           blinky->getDirection(), pinky->getDirection(),
+                                           inky->getDirection(), clyde->getDirection());
+    QPoint blinkyPos = blinky->move(map, pacmanPos, canMoveBlinky, true);
+    QPoint pinkyPos = pinky->move(map, pacmanPos, canMovePinky, false);
+    QPoint inkyPos = inky->move(map, pacmanPos, canMoveInky, true);
+    QPoint clydePos = clyde->move(map, pacmanPos, canMoveClyde, false);
+
+    checkForScoreChange(pacmanPos);
+
+    tunnelCoordinates(pacmanPos);
+    tunnelCoordinates(blinkyPos);
+    tunnelCoordinates(pinkyPos);
+    tunnelCoordinates(inkyPos);
+    tunnelCoordinates(clydePos);
+
+    checkForGameState(pacmanPos, blinkyPos, pinkyPos, inkyPos, clydePos);
+}
+
+void GameWidget::checkForGameState(QPoint &pacmanPos, QPoint &blinkyPos, QPoint &pinkyPos, QPoint &inkyPos,
+                                   QPoint &clydePos) {
     if (biscuitTextures.empty()) {
         cout << "Win" << endl;
-        timer.stop();
+        gameTimer.stop();
         result = new QLabel("You won!");
         result->setGeometry(230, 210, 400, 200);
         result->setStyleSheet(
                 "QLabel { color : white; width: 400px; height: 200px; background-color: transparent; border: 0; font-size: 28px; }");
         scene->addWidget(result);
+        writeStats(true, true);
     }
 
     if (pacmanPos == blinkyPos or pacmanPos == pinkyPos or pacmanPos == inkyPos or pacmanPos == clydePos) {
         lives--;
         livesText->setText("Lives: " + QString::number(lives));
         if (lives != 0) {
-            randomBiscuitPos.setX(-1);
-            randomBiscuitPos.setY(-1);
-            pacmanTexture->setPos(13 * 20, 23 * 20);
-            pacmanTexture->setDirection(0);
-
-            blinky->setPos(13 * 20, 14 * 20);
-            blinky->setDirection(0);
-
-            pinky->setPos(14 * 20, 14 * 20);
-            pinky->setDirection(0);
-
-            inky->setPos(13 * 20, 15 * 20);
-            inky->setDirection(0);
-
-            clyde->setPos(14 * 20, 15 * 20);
-            clyde->setDirection(0);
-
+            moveActorsToStartPos();
         } else {
             cout << "Lose" << endl;
             result = new QLabel("You lost!");
@@ -369,9 +214,35 @@ void GameWidget::clock() {
                     "QLabel { color : white; width: 400px; height: 200px; background-color: transparent; border: 0; font-size: 28px; }");
             scene->addWidget(result);
 
-            timer.stop();
+            gameTimer.stop();
+            writeStats(false, true);
         }
     }
+}
+
+void GameWidget::writeStats(bool win, bool minimax) {
+    totalGameTime.stopTimer();
+    QFile file("Stats.csv");
+    bool empty = false;
+    if (file.size() == 0) empty = true;
+    if (!file.open(QFile::WriteOnly | QIODevice::Append | QFile::Text)) {
+        QMessageBox::warning(this, "Writing to stats file", "File wasn't opened");
+    }
+    QTextStream out(&file);
+
+    if (empty) {
+        out << "Result,Time(sec),Points,Max Points,Algorithm\n";
+    }
+
+    if (win) out << "Win,";
+    else out << "Lose,";
+
+    out << totalGameTime.getElapsedTime()<< ",";
+    out << score << ",";
+    out << maxScore << ",";
+
+    if (minimax) out << "Minimax\n";
+    else out << "Expectimax\n";
 }
 
 void GameWidget::startNewGame() {
@@ -381,42 +252,7 @@ void GameWidget::startNewGame() {
     scoreText->setText("Score: " + QString::number(score));
     livesText->setText("Lives: " + QString::number(lives));
     biscuitTextures.clear();
-    pathTextures.clear();
-    randomBiscuitPos.setX(-1);
-    randomBiscuitPos.setY(-1);
-//    this->map = {
-//            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 4, 1, 2, 2, 1, 0, 1, 2, 2, 2, 1, 0, 1, 1, 0, 1, 2, 2, 2, 1, 0, 1, 2, 2, 1, 4, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 1, 1, 3, 3, 3, 3, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//            {2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2},
-//            {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {2, 2, 2, 2, 2, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2, 2, 2},
-//            {1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//            {1, 4, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 4, 1},
-//            {1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1},
-//            {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
-//            {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-//            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-//    };
+
     MapGenerator generator;
     this->map = generator.generateMapDfs();
 
@@ -424,25 +260,22 @@ void GameWidget::startNewGame() {
 
     pacmanTexture = new PacmanItem();
     scene->addItem(pacmanTexture);
-    pacmanTexture->setPos(13 * 20, 23 * 20);
 
     blinky = new SimpleGhost();
     scene->addItem(blinky);
-    blinky->setPos(13 * 20, 14 * 20);
 
     pinky = new SimpleGhost();
     scene->addItem(pinky);
-    pinky->setPos(14 * 20, 14 * 20);
 
     inky = new SimpleGhost();
     scene->addItem(inky);
-    inky->setPos(13 * 20, 15 * 20);
 
     clyde = new SimpleGhost();
     scene->addItem(clyde);
-    clyde->setPos(14 * 20, 15 * 20);
 
-    timer.start(50);
+    moveActorsToStartPos();
+
+    gameTimer.start(70);
 }
 
 GameWidget::~GameWidget() = default;
