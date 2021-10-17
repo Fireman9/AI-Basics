@@ -16,7 +16,7 @@ using namespace std;
 
 class Node {
 public:
-    Node(bool root, bool max, int alpha, int beta, int depth,
+    Node(bool root, bool max, double alpha, double beta, int depth, double value,
          QPoint pacmanPos, QPoint blinkyPos, QPoint pinkyPos, QPoint inkyPos, QPoint clydePos,
          int blinkyDir, int pinkyDir, int inkyDir, int clydeDir,
          vector<vector<int>> map);
@@ -31,15 +31,11 @@ public:
 
     void generateChildren();
 
-    double getValue();
-
-    int calculateBestChild();
+    double getValue() const;
 
     QPoint getPacmanPos() const;
 
     const vector<Node> &getChildren() const;
-
-    int getBestChildIndex() const;
 
     int findFirstBiscuitBfs(bool findGhost);
 
@@ -48,12 +44,13 @@ public:
 private:
     bool root;
     bool max;
-    int alpha;
-    int beta;
-    double value;
+    double alpha;
+    double beta;
+    double finalValue;
+    double tempValue;
+    double parentValue;
     int depth;
     int depthLimit;
-    int bestChildIndex;
 
     int blinkyDir;
     int pinkyDir;

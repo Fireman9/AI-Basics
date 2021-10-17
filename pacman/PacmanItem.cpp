@@ -111,14 +111,14 @@ QPoint PacmanItem::move(const vector<vector<int>> &map, vector<QGraphicsItem *> 
     Timer t;
     t.startTimer();
 
-    Node minimaxTree(true, true, 0, 0, 0, QPoint((int) x, (int) y),
+    Node minimaxTree(true, true, -9999, 9999, 0, 0, QPoint((int) x, (int) y),
                      blinkyPos, pinkyPos, inkyPos, clydePos,
                      blinkyDir, pinkyDir, inkyDir, clydeDir,
                      map);
-    const vector<Node> &nextMoveNode = minimaxTree.getChildren();
-    if (minimaxTree.getBestChildIndex() != -1) {
-        QPoint nextMove = nextMoveNode[minimaxTree.getBestChildIndex()].getPacmanPos();
-        if (!nextMoveNode.empty()) {
+    const vector<Node> &nextMoveNodes = minimaxTree.getChildren();
+    for (const auto &node: nextMoveNodes) {
+        if (node.getValue() == minimaxTree.getValue()) {
+            QPoint nextMove = node.getPacmanPos();
             if ((int) x - nextMove.x() == -1) {
                 direction = 2;
             } else if ((int) x - nextMove.x() == 1) {

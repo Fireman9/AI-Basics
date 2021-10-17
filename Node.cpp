@@ -1,6 +1,6 @@
 #include "Node.h"
 
-Node::Node(bool root, bool max, int alpha, int beta, int depth,
+Node::Node(bool root, bool max, double alpha, double beta, int depth, double value,
            QPoint pacmanPos, QPoint blinkyPos, QPoint pinkyPos, QPoint inkyPos, QPoint clydePos,
            int blinkyDir, int pinkyDir, int inkyDir, int clydeDir,
            vector<vector<int>> map) {
@@ -10,6 +10,7 @@ Node::Node(bool root, bool max, int alpha, int beta, int depth,
     this->beta = beta;
     this->depth = depth;
     this->depthLimit = 4;
+    this->parentValue = value;
 
     this->blinkyDir = blinkyDir;
     this->pinkyDir = pinkyDir;
@@ -23,13 +24,15 @@ Node::Node(bool root, bool max, int alpha, int beta, int depth,
     this->clydePos = clydePos;
 
     this->map = move(map);
-    this->value = calculateValue();
+    this->tempValue = calculateValue();
+    if (depth == depthLimit) {
+        this->finalValue = tempValue + parentValue;
+    }
     if (this->map[this->pacmanPos.y()][this->pacmanPos.x()] == 0) {
         this->map[this->pacmanPos.y()][this->pacmanPos.x()] = 2;
     }
 
     generateChildren();
-    this->bestChildIndex = calculateBestChild();
 }
 
 double Node::calculateValue() {
@@ -38,7 +41,7 @@ double Node::calculateValue() {
         int minDist = findFirstBiscuitBfs(false);
         score = -minDist * 3;
         if (minDist == 0) {
-            score += 100;
+            score += 300.0 / depth;
         }
     } else {
         int minPath = findFirstBiscuitBfs(true);
@@ -46,9 +49,9 @@ double Node::calculateValue() {
         if (minPath == 0) {
             score -= 9999;
         } else if (minPath == 1) {
-            score -= 500;
+            score -= 1000;
         } else if (minPath == 2) {
-            score -= 200;
+            score -= 400;
         }
     }
     return score;
@@ -179,7 +182,7 @@ int Node::findFirstBiscuitBfs(bool findGhost) {
     map[clydePos.y()][clydePos.x()] = prevMapPosClyde;
 
     if (allVisited && path.empty()) {
-        return 9999;
+        return -5000;
     }
     return (int) path.size();
 }
@@ -231,7 +234,10 @@ void Node::getAllNewCoordinates(QPoint &ghostPos, vector<QPoint> &pos, int direc
 
 void Node::generateChildren() {
     if (depth == depthLimit) return;
-    if (!biscuitLeft()) return;
+    if (!biscuitLeft()) {
+        this->finalValue = calculateValue() + parentValue;
+        return;
+    }
 
     vector<QPoint> newPacmanPos;
     vector<QPoint> newBlinkyPos;
@@ -257,69 +263,59 @@ void Node::generateChildren() {
         if (!Movement::checkTopBlock(pacmanPos.x(), pacmanPos.y(), map, 1, false)) {
             newPacmanPos.emplace_back(pacmanPos.x(), pacmanPos.y() - 1);
         }
+        double bestValue = -9999;
         for (auto &pacman: newPacmanPos) {
             children.emplace_back(
-                    Node(false, false, 0, 0, depth + 1, pacman,
+                    Node(false, false, alpha, beta, depth + 1, parentValue + tempValue,
+                         pacman,
                          blinkyPos, pinkyPos, inkyPos, clydePos,
                          blinkyDir, pinkyDir, inkyDir, clydeDir,
                          newMap)
             );
+            bestValue = std::max(bestValue, children.back().getValue());
+            alpha = std::max(alpha, bestValue);
+            if (beta <= alpha)
+                break;
         }
+        finalValue = bestValue;
     } else {
         getAllNewCoordinates(blinkyPos, newBlinkyPos, blinkyDir, newBlinkyDir);
         getAllNewCoordinates(pinkyPos, newPinkyPos, pinkyDir, newPinkyDir);
         getAllNewCoordinates(inkyPos, newInkyPos, inkyDir, newInkyDir);
         getAllNewCoordinates(clydePos, newClydePos, clydeDir, newClydeDir);
 
+        bool breakCycle = false;
+        double bestValue = 9999;
         for (auto &blinky: newBlinkyPos) {
+            if (breakCycle) break;
             for (auto &pinky: newPinkyPos) {
+                if (breakCycle) break;
                 for (auto &inky: newInkyPos) {
+                    if (breakCycle) break;
                     for (auto &clyde: newClydePos) {
                         children.emplace_back(
-                                Node(false, true, 0, 0, depth + 1, pacmanPos,
+                                Node(false, true, alpha, beta, depth + 1, parentValue + tempValue,
+                                     pacmanPos,
                                      blinky, pinky, inky, clyde,
                                      newBlinkyDir, newPinkyDir, newInkyDir, newClydeDir,
                                      newMap)
                         );
+                        bestValue = std::min(bestValue, children.back().getValue());
+                        beta = std::min(beta, bestValue);
+                        if (beta <= alpha) {
+                            breakCycle = true;
+                            break;
+                        }
                     }
                 }
             }
         }
+        finalValue = bestValue;
     }
 }
 
-double Node::getValue() {
-    return this->value;
-}
-
-int Node::calculateBestChild() {
-    if (children.empty()) return -1;
-    if (max) {
-        bestChildIndex = 0;
-        double bestValue = -9999;
-        for (int i = 0; i < children.size(); ++i) {
-            if (children[i].bestChildIndex != -1)
-                children[i].value += children[i].children[children[i].bestChildIndex].value;
-            if (children[i].value > bestValue) {
-                bestValue = children[i].value;
-                bestChildIndex = i;
-            }
-        }
-        return bestChildIndex;
-    } else {
-        bestChildIndex = 0;
-        double bestValue = 9999;
-        for (int i = 0; i < children.size(); ++i) {
-            if (children[i].bestChildIndex != -1)
-                children[i].value += children[i].children[children[i].bestChildIndex].value;
-            if (children[i].value < bestValue) {
-                bestValue = children[i].value;
-                bestChildIndex = i;
-            }
-        }
-        return bestChildIndex;
-    }
-
+double Node::getValue() const {
+    return this->finalValue;
 }
 
 QPoint Node::getPacmanPos() const {
@@ -328,10 +324,6 @@ QPoint Node::getPacmanPos() const {
 
 const vector<Node> &Node::getChildren() const {
     return children;
-}
-
-int Node::getBestChildIndex() const {
-    return bestChildIndex;
 }
 
 Node::~Node() = default;
