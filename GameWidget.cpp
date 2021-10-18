@@ -243,6 +243,9 @@ void GameWidget::writeStats(bool win, bool minimax) {
 
     if (minimax) out << "Minimax\n";
     else out << "Expectimax\n";
+
+    out.flush();
+    file.close();
 }
 
 void GameWidget::startNewGame() {
