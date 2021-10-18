@@ -279,6 +279,7 @@ void GameWidget::startNewGame() {
     moveActorsToStartPos();
 
     gameTimer.start(70);
+    totalGameTime.startTimer();
 }
 
 GameWidget::~GameWidget() = default;
