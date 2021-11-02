@@ -198,6 +198,9 @@ void GameWidget::checkForGameState(QPoint &pacmanPos, QPoint &blinkyPos, QPoint 
         result->setStyleSheet(
                 "QLabel { color : white; width: 400px; height: 200px; background-color: transparent; border: 0; font-size: 28px; }");
         scene->addWidget(result);
+        totalGameTime.stopTimer();
+        string command = "python3 predict.py " + to_string(totalGameTime.getElapsedTime()) + " Win";
+        system(command.c_str());
         writeStats(true, true);
     }
 
@@ -215,13 +218,15 @@ void GameWidget::checkForGameState(QPoint &pacmanPos, QPoint &blinkyPos, QPoint 
             scene->addWidget(result);
 
             gameTimer.stop();
+            totalGameTime.stopTimer();
+            string command = "python3 predict.py " + to_string(totalGameTime.getElapsedTime()) + " Lose";
+            system(command.c_str());
             writeStats(false, true);
         }
     }
 }
 
 void GameWidget::writeStats(bool win, bool minimax) {
-    totalGameTime.stopTimer();
     QFile file("Stats.csv");
     bool empty = false;
     if (file.size() == 0) empty = true;
@@ -237,7 +242,7 @@ void GameWidget::writeStats(bool win, bool minimax) {
     if (win) out << "Win,";
     else out << "Lose,";
 
-    out << totalGameTime.getElapsedTime()<< ",";
+    out << totalGameTime.getElapsedTime() << ",";
     out << score << ",";
     out << maxScore << ",";
 
